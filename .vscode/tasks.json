@@ -1,0 +1,111 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    // ─── Serve ────────────────────────────────────────────────────────────────
+    {
+      "label": "Hugo: Serve",
+      "type": "shell",
+      "command": "hugo server --buildDrafts --buildFuture --disableFastRender",
+      "options": {
+        "shell": {
+          "executable": "wsl",
+          "args": ["-d", "ArchDaemon"]
+        }
+      },
+      "group": "build",
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "^(ERROR|WARN)(.*)$",
+          "message": 2
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^(Building|Start building)",
+          "endsPattern": "^Web Server is available"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      }
+    },
+
+    // ─── New Post ─────────────────────────────────────────────────────────────
+    {
+      "label": "Hugo: New Post",
+      "type": "shell",
+      // Prompts for a slug, then creates content/posts/<slug>.md
+      "command": "hugo new content/posts/${input:postSlug}.md",
+      "options": {
+        "shell": {
+          "executable": "wsl",
+          "args": ["-d", "ArchDaemon"]
+        }
+      },
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": false
+      }
+    },
+
+    // ─── New Page (top-level) ─────────────────────────────────────────────────
+    {
+      "label": "Hugo: New Page",
+      "type": "shell",
+      "command": "hugo new content/${input:pagePath}.md",
+      "options": {
+        "shell": {
+          "executable": "wsl",
+          "args": ["-d", "ArchDaemon"]
+        }
+      },
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": false
+      }
+    },
+
+    // ─── Build ────────────────────────────────────────────────────────────────
+    {
+      "label": "Hugo: Build (production)",
+      "type": "shell",
+      "command": "hugo --minify",
+      "options": {
+        "shell": {
+          "executable": "wsl",
+          "args": ["-d", "ArchDaemon"]
+        }
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true
+      }
+    }
+  ],
+
+  "inputs": [
+    {
+      "id": "postSlug",
+      "type": "promptString",
+      "description": "Post filename (slug) — e.g. my-new-post",
+      "default": "my-new-post"
+    },
+    {
+      "id": "pagePath",
+      "type": "promptString",
+      "description": "Page path inside content/ — e.g. about or projects/my-project",
+      "default": "new-page"
+    }
+  ]
+}
