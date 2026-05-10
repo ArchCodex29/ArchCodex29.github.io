@@ -21,7 +21,7 @@ defaults:
 jobs:
   generate:
     runs-on: ubuntu-latest
-    outputs:
+    #outputs:
       # content_changed: ${{ steps.changes.outputs.content }}
       # site_changed:    ${{ steps.changes.outputs.site }}
       # should_build:    ${{ steps.changes.outputs.should_build }}
