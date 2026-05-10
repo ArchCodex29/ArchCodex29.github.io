@@ -1,0 +1,10 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# This directory is AUTO-POPULATED by .github/scripts/sync_content.py
+# DO NOT edit files here — edit the source .md files in the root folders instead.
+#
+# All subdirectories are ignored because they are fully generated.
+# Files placed directly in site/content/ (e.g. _index.md) ARE tracked.
+# ──────────────────────────────────────────────────────────────────────────────
+
+# Ignore all generated subfolders
+*/

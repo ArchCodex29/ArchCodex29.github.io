@@ -1,27 +1,110 @@
-name: Build and deploy
+name: Sync content, Build and Deploy
 on:
   push:
     branches:
       - main
   workflow_dispatch:
+
 permissions:
   contents: read
   pages: write
   id-token: write
+
 concurrency:
   group: pages
   cancel-in-progress: false
+
 defaults:
   run:
     shell: bash
+
 jobs:
+  generate:
+    runs-on: ubuntu-latest
+    outputs:
+      content_changed: ${{ steps.changes.outputs.content }}
+      site_changed:    ${{ steps.changes.outputs.site }}
+      should_build:    ${{ steps.changes.outputs.should_build }}
+
+    steps:
+        # Full history needed so git log can find each file's first commit date.
+        # No submodules here — themes are only needed at build time.
+        - name: Checkout (full history)
+          uses: actions/checkout@v4
+          with:
+            fetch-depth: 0
+
+        - name: Set up Python
+          uses: actions/setup-python@v5
+          with:
+            python-version: "3.12"
+
+        - name: Discover content folders
+          id: folders
+          run: |
+            FOLDERS=$(python .github/scripts/sync_content.py --list)
+            echo "Discovered: $FOLDERS"
+            echo "list=$FOLDERS" >> $GITHUB_OUTPUT
+
+        - name: Detect changed paths
+          id: changes
+          run: |
+            # Manual dispatch → treat everything as changed
+            if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+              echo "content=true"      >> $GITHUB_OUTPUT
+              echo "site=true"         >> $GITHUB_OUTPUT
+              echo "should_build=true" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+
+            PREV=$(git rev-parse HEAD~1 2>/dev/null \
+                  || git hash-object -t tree /dev/null)
+
+            CONTENT_CHANGED=""
+            for folder in ${{ steps.folders.outputs.list }}; do
+              if git diff --name-only "$PREV" HEAD -- "${folder}/" | grep -q .; then
+                CONTENT_CHANGED="true"
+                break
+              fi
+            done
+
+            SITE_CHANGED=$(git diff --name-only "$PREV" HEAD -- 'site/' | head -1)
+
+            [ -n "$CONTENT_CHANGED" ] && echo "content=true"  >> $GITHUB_OUTPUT \
+                                      || echo "content=false" >> $GITHUB_OUTPUT
+            [ -n "$SITE_CHANGED"    ] && echo "site=true"     >> $GITHUB_OUTPUT \
+                                      || echo "site=false"    >> $GITHUB_OUTPUT
+
+            if [ -n "$CONTENT_CHANGED" ] || [ -n "$SITE_CHANGED" ]; then
+              echo "should_build=true"  >> $GITHUB_OUTPUT
+            else
+              echo "should_build=false" >> $GITHUB_OUTPUT
+            fi
+
+        - name: Sync content → site/content/
+          if: steps.changes.outputs.content == 'true'
+          run: python .github/scripts/sync_content.py
+
+        # Upload generated site/content/ so the build job can use it.
+        # Jobs run on separate machines — artifacts are the handoff mechanism.
+        - name: Upload generated content
+          if: steps.changes.outputs.content == 'true'
+          uses: actions/upload-artifact@v4
+          with:
+            name: generated-content
+            path: site/content/
+            retention-days: 1   # ephemeral — only needed for the current run
+
   build:
+    needs: generate
+    if: needs.generate.outputs.should_build == 'true'
     runs-on: ubuntu-latest
     env:
       DART_SASS_VERSION: 1.99.0
       GO_VERSION: 1.26.1
       HUGO_VERSION: 0.160.0
       NODE_VERSION: 24.14.1
+      PYTHON_VERSION: 3.12
       TZ: Europe/Lisbon
     steps:
       - name: Checkout
@@ -29,11 +112,22 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0
+      
+      - name: Download generated content
+        uses: actions/download-artifact@v4
+        with:
+          name: generated-content
+          path: site/content/
+
       - name: Setup Go
         uses: actions/setup-go@v6
         with:
           go-version: ${{ env.GO_VERSION }}
           cache: false
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
@@ -78,6 +172,7 @@ jobs:
           restore-keys:
             hugo-
       - name: Build the site
+        working-directory: site
         run: |
           hugo build \
             --gc \
@@ -93,13 +188,14 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5
         with:
-          path: ./public
+          path: ./site/public
   deploy:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     needs: build
+    if: needs.build.result == 'success'
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
