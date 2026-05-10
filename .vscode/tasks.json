@@ -1,12 +1,32 @@
 {
   "version": "2.0.0",
   "tasks": [
+    // ── Sync only (no server) ───────────────────────────────────────────────
+    {
+      "label": "Hugo: Sync content",
+      "detail": "Run the sync script",
+      "type": "shell",
+      "command": "python .github/scripts/sync_content.py",
+      "options": {
+        "shell": {
+          "executable": "wsl",
+          "args": ["-d", "ArchDaemon"]
+        }
+      },
+      "group": "none",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true
+      }
+    },
     // ─── Serve ────────────────────────────────────────────────────────────────
     {
       "label": "Hugo: Serve",
       "type": "shell",
       "command": "hugo server --buildDrafts --buildFuture --disableFastRender",
       "options": {
+        "cwd": "${workspaceFolder}/site",
         "shell": {
           "executable": "wsl",
           "args": ["-d", "ArchDaemon"]
@@ -32,13 +52,21 @@
       }
     },
 
+    // ───Sync & Serve ──────────────────────────────────────────────────────────
+    
+    {
+      "label": "Hugo: Sync and Serve",
+      "dependsOn": ["Hugo: Sync content", "Hugo: Serve"]
+    },
+
     // ─── New Post ─────────────────────────────────────────────────────────────
     {
-      "label": "Hugo: New Post",
+      "label": "Hugo: Add New Post",
       "type": "shell",
       // Prompts for a slug, then creates content/posts/<slug>.md
       "command": "hugo new content/posts/${input:postSlug}.md",
       "options": {
+        "cwd": "${workspaceFolder}/site",
         "shell": {
           "executable": "wsl",
           "args": ["-d", "ArchDaemon"]
@@ -54,10 +82,11 @@
 
     // ─── New Page (top-level) ─────────────────────────────────────────────────
     {
-      "label": "Hugo: New Page",
+      "label": "Hugo: Add New Page",
       "type": "shell",
       "command": "hugo new content/${input:pagePath}.md",
       "options": {
+        "cwd": "${workspaceFolder}/site",
         "shell": {
           "executable": "wsl",
           "args": ["-d", "ArchDaemon"]
@@ -77,6 +106,7 @@
       "type": "shell",
       "command": "hugo --minify",
       "options": {
+        "cwd": "${workspaceFolder}/site",
         "shell": {
           "executable": "wsl",
           "args": ["-d", "ArchDaemon"]
