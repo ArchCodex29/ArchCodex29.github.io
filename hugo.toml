@@ -11,8 +11,8 @@ theme = "hugo-coder"
 pagerSize = 20
 
 [services]
-[services.disqus]
-shortname = "yourdiscussshortname"
+#[services.disqus]
+#shortname = "yourdiscussshortname"
 
 [markup.highlight]
 style = "github-dark"
@@ -60,10 +60,14 @@ style = "github-dark"
 
 # Menu links
 [[menu.main]]
-  name = "Blog"
-  weight = 1
-  url  = "posts/"
-[[menu.main]]
   name = "About"
-  weight = 2
+  weight = 1
   url = "about/"
+[[menu.main]]
+  name = "Projects"
+  weight = 2
+  url = "projects/"
+[[menu.main]]
+  name = "Game Dev"
+  weight = 3
+  url  = "gamedev/"
