@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": ".github"
+		},
+		{
+			"path": ".vscode"
+		},
+		{
+			"path": "site"
+		}
+	],
+	"settings": {}
+}
