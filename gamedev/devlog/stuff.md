@@ -1,1 +1,0 @@
-Here is where you will find the devlog posts about my current game dev project

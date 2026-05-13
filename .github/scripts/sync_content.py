@@ -3,16 +3,17 @@
 sync_content.py
 ───────────────
 Scans the repo root for content folders, infers Hugo front-matter
-(title, date, series) for every markdown file found, and writes the
-result into site/content/.  Images and other assets are copied unchanged.
+(title, date, series) for every markdown file found, rewrites relative
+image references to absolute static paths, copies images to
+site/static/images/, and writes the processed markdown to site/content/.
 
-A "content folder" is any root-level directory that is NOT in EXCLUDED_DIRS
-below.  To add a new section (e.g. "writing/"), just create the folder and
-start writing — nothing else needs updating.
+A "content folder" is any root-level directory that is NOT in EXCLUDED_DIRS.
+To add a new section (e.g. "writing/"), just create the folder and start
+writing — nothing else needs updating.
 
 Usage (always run from the repo root):
     python .github/scripts/sync_content.py          # sync all
-    python .github/scripts/sync_content.py --list   # print discovered folders, one per line
+    python .github/scripts/sync_content.py --list   # print discovered folders, space-separated
 """
 
 import os
@@ -26,29 +27,27 @@ from pathlib import Path
 
 # ── Configuration ─────────────────────────────────────────────────────────────
 
-# Directories at the repo root that are NOT content folders.
-# Everything else is treated as a content source automatically.
 EXCLUDED_DIRS = {
-    "site",        # the Hugo project itself
-    ".github",     # CI / scripts
-    ".git",        # git internals
-    ".vscode",     # editor config
+    "site",
+    ".github",
+    ".git",
+    ".vscode",
     "node_modules",
 }
 
-SITE_CONTENT = Path("site") / "content"
+SITE_CONTENT       = Path("site") / "content"
+SITE_STATIC_IMAGES = Path("site") / "static" / "images"
 
-# Extensions copied into site/content/ without modification
-ASSET_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg", ".mp4"}
+IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg", ".mp4"}
+
+# Matches standard markdown image syntax: ![alt text](path/to/image.png)
+# Also captures optional title:           ![alt](path "title")
+MD_IMAGE_RE = re.compile(r'!\[([^\]]*)\]\(([^)\s]+)(\s+"[^"]*")?\)')
 
 # ──────────────────────────────────────────────────────────────────────────────
 
 
 def discover_content_folders(root: Path) -> list[Path]:
-    """
-    Return all root-level directories that should be treated as content sources.
-    Excludes dotfolders and anything listed in EXCLUDED_DIRS.
-    """
     folders = []
     for item in sorted(root.iterdir()):
         if not item.is_dir():
@@ -62,19 +61,11 @@ def discover_content_folders(root: Path) -> list[Path]:
 
 
 def get_first_commit_date(filepath: Path) -> str:
-    """Return the ISO-8601 datetime of the first git commit for this file."""
-    try:
-        result = subprocess.run(
-            ["git", "log", "--follow", "--diff-filter=A", "--format=%aI", "--", str(filepath)],
-            capture_output=True,
-            text=True,
-        )
-    except FileNotFoundError:
-        return datetime.now(timezone.utc).isoformat()
-
-    if result.returncode != 0:
-        return datetime.now(timezone.utc).isoformat()
-
+    result = subprocess.run(
+        ["git", "log", "--follow", "--diff-filter=A", "--format=%aI", "--", str(filepath)],
+        capture_output=True,
+        text=True,
+    )
     lines = result.stdout.strip().splitlines()
     if lines:
         return lines[0]
@@ -82,10 +73,6 @@ def get_first_commit_date(filepath: Path) -> str:
 
 
 def stem_to_title(stem: str) -> str:
-    """
-    'Devlog1-starting'  → 'Devlog1 Starting'
-    'my_cool_project'   → 'My Cool Project'
-    """
     return re.sub(r"[-_]+", " ", stem).strip().title()
 
 
@@ -99,49 +86,122 @@ def build_frontmatter(title: str, date: str, series: str | None) -> str:
     return "\n".join(lines) + "\n\n"
 
 
-def sync_markdown(src: Path) -> None:
-    """Inject front-matter and write to the mirrored site/content/ path."""
-    parts = src.parts  # e.g. ("gamedev", "nanoswarm", "Devlog1-starting.md")
+def copy_image(src: Path) -> None:
+    """
+    Copy an image to site/static/images/, mirroring the source path.
 
-    # Series: the first subfolder below the category, if one exists
+    gamedev/nanoswarm/cover.png
+        → site/static/images/gamedev/nanoswarm/cover.png
+        → served at /images/gamedev/nanoswarm/cover.png
+    """
+    dest = SITE_STATIC_IMAGES / Path(*src.parts)
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(src, dest)
+    print(f"  ✔  {src}  →  {dest}  [image]")
+
+
+def rewrite_image_refs(content: str, src_file: Path) -> str:
+    """
+    Rewrite relative image references in markdown to absolute /images/... URLs
+    and copy the image files to site/static/images/.
+
+    Example (file is gamedev/nanoswarm/devlog0.md):
+        ![cover](cover.png)
+        → ![cover](/images/gamedev/nanoswarm/cover.png)
+
+    References that are already absolute URLs or absolute paths are left alone.
+    Missing files emit a warning and are left unchanged.
+    """
+    repo_root = Path(".").resolve()
+
+    def replace(match: re.Match) -> str:
+        alt   = match.group(1)
+        ref   = match.group(2)
+        title = match.group(3) or ""
+
+        # Leave absolute URLs and already-absolute paths untouched
+        if ref.startswith(("http://", "https://", "/")):
+            return match.group(0)
+
+        # Resolve relative to the markdown file's directory
+        img_src = (src_file.parent / ref).resolve()
+
+        try:
+            repo_relative = img_src.relative_to(repo_root)
+        except ValueError:
+            print(f"  ⚠  image path escapes repo root, skipping: {ref}")
+            return match.group(0)
+
+        if not img_src.exists():
+            print(f"  ⚠  image not found, reference left unchanged: {img_src}")
+            return match.group(0)
+
+        # Copy the image to site/static/images/
+        copy_image(repo_relative)
+
+        # Rewrite the reference to an absolute URL
+        new_url = "/images/" + "/".join(repo_relative.parts)
+        return f"![{alt}]({new_url}{title})"
+
+    return MD_IMAGE_RE.sub(replace, content)
+
+
+def sync_markdown(src: Path) -> None:
+    """
+    Process one markdown file:
+      1. Infer and prepend front-matter
+      2. Rewrite relative image refs → absolute /images/... URLs
+      3. Copy referenced images to site/static/images/
+      4. Write the result to site/content/
+    """
+    parts  = src.parts
     series = parts[1] if len(parts) >= 3 else None
 
+    # For _index.md, use the containing folder name as the title
+    if src.name == "_index.md":
+        title = stem_to_title(src.parent.name)
+    else:
+        title = stem_to_title(src.stem)
+
     frontmatter = build_frontmatter(
-        title=stem_to_title(src.stem),
+        title=title,
         date=get_first_commit_date(src),
         series=series,
     )
+
+    body = src.read_text(encoding="utf-8")
+    body = rewrite_image_refs(body, src)
+
     dest = SITE_CONTENT / Path(*parts)
     dest.parent.mkdir(parents=True, exist_ok=True)
-    dest.write_text(frontmatter + src.read_text(encoding="utf-8"), encoding="utf-8")
+    dest.write_text(frontmatter + body, encoding="utf-8")
     print(f"  ✔  {src}  →  {dest}")
 
 
-def copy_asset(src: Path) -> None:
-    dest = SITE_CONTENT / Path(*src.parts)
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(src, dest)
-    print(f"  ✔  {src}  →  {dest}  [asset]")
-
-
 def wipe_generated_folders(folders: list[Path]) -> None:
-    """Remove previously generated output to prevent stale files."""
+    """
+    Remove previously generated output under both site/content/ and
+    site/static/images/ so stale files don't survive renames or deletes.
+    """
     for folder in folders:
-        target = SITE_CONTENT / folder.name
-        if target.exists():
-            shutil.rmtree(target)
-            print(f"  🗑  cleared {target}/")
+        for target in [
+            SITE_CONTENT       / folder.name,
+            SITE_STATIC_IMAGES / folder.name,
+        ]:
+            if target.exists():
+                shutil.rmtree(target)
+                print(f"  🗑  cleared {target}/")
 
 
 def sync_all() -> None:
-    root = Path(".")
+    root    = Path(".")
     folders = discover_content_folders(root)
 
     if not folders:
         print("No content folders found — nothing to sync.")
         return
 
-    print(f"→ Discovered content folders: {[f.name for f in folders]}")
+    print(f"→ Discovered: {[f.name for f in folders]}")
 
     print("── Clearing stale output ─────────────────────────────────────────")
     wipe_generated_folders(folders)
@@ -156,9 +216,12 @@ def sync_all() -> None:
             if not item.is_file():
                 continue
             if item.suffix == ".md":
+                # Handles both content writing and referenced-image copying
                 sync_markdown(item)
-            elif item.suffix.lower() in ASSET_EXTENSIONS:
-                copy_asset(item)
+            elif item.suffix.lower() in IMAGE_EXTENSIONS:
+                # Also copy images that aren't referenced in any markdown file
+                # (e.g. assets used in front-matter, og:image, future use)
+                copy_image(item)
 
     print("── Done ──────────────────────────────────────────────────────────")
 
@@ -168,7 +231,6 @@ if __name__ == "__main__":
     os.chdir(repo_root)
 
     if "--list" in sys.argv:
-        # Print discovered folder names, space-separated — used by the workflow
         folders = discover_content_folders(Path("."))
         print(" ".join(f.name for f in folders))
     else:

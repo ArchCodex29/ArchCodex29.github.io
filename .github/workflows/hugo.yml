@@ -93,7 +93,15 @@ jobs:
         with:
           name: generated-content
           path: site/content/
-          retention-days: 1   # ephemeral — only needed for the current run
+          retention-days: 1
+      
+      - name: Upload generated images
+        # if: steps.changes.outputs.content == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-images
+          path: site/static/images/
+          retention-days: 1
 
   build:
     needs: generate
@@ -118,6 +126,12 @@ jobs:
         with:
           name: generated-content
           path: site/content/
+      
+      - name: Download generated images
+        uses: actions/download-artifact@v4
+        with:
+          name: generated-images
+          path: site/static/images/
 
       - name: Setup Go
         uses: actions/setup-go@v6
