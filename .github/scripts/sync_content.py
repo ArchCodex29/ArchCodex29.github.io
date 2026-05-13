@@ -71,19 +71,30 @@ def get_first_commit_date(filepath: Path) -> str:
         return lines[0]
     return datetime.now(timezone.utc).isoformat()
 
+def get_last_modified_date(filepath: Path) -> str:
+    result = subprocess.run(
+        ["git", "log", "-1", "--format=%aI", "--", str(filepath)],
+        capture_output=True,
+        text=True,
+    )
+    date = result.stdout.strip()
+    if date:
+        return date
+    return datetime.now(timezone.utc).isoformat()
 
 def stem_to_title(stem: str) -> str:
     return re.sub(r"[-_]+", " ", stem).strip().title()
 
 
-def build_frontmatter(title: str, date: str, series: str | None, draft: str | None) -> str:
+def build_frontmatter(title: str, date: str, lastmod: str, series: str | None, draft: str | None) -> str:
     lines = ["+++"]
-    lines.append(f'title  = "{title}"')
-    lines.append(f'date   = "{date}"')
+    lines.append(f'title = "{title}"')
+    lines.append(f'date = "{date}"')
+    lines.append(f'lastmod = "{lastmod}"')
     if series:
         lines.append(f'series = ["{series}"]')
     if draft:
-        lines.append(f'draft  = true')
+        lines.append(f'draft = true')
     lines.append("+++")
     return "\n".join(lines) + "\n\n"
 
@@ -172,6 +183,7 @@ def sync_markdown(src: Path) -> None:
     frontmatter = build_frontmatter(
         title=title,
         date=get_first_commit_date(src),
+        lastmod=get_last_modified_date(src),
         series=series,
         draft=is_draft
     )
