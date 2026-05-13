@@ -76,12 +76,14 @@ def stem_to_title(stem: str) -> str:
     return re.sub(r"[-_]+", " ", stem).strip().title()
 
 
-def build_frontmatter(title: str, date: str, series: str | None) -> str:
+def build_frontmatter(title: str, date: str, series: str | None, draft: str | None) -> str:
     lines = ["+++"]
     lines.append(f'title  = "{title}"')
     lines.append(f'date   = "{date}"')
     if series:
         lines.append(f'series = ["{series}"]')
+    if draft:
+        lines.append(f'draft  = true')
     lines.append("+++")
     return "\n".join(lines) + "\n\n"
 
@@ -156,23 +158,31 @@ def sync_markdown(src: Path) -> None:
     """
     parts  = src.parts
     series = parts[1] if len(parts) >= 3 else None
+    
+    is_draft = src.suffixes == ['.draft', '.md']
+
+    stem = src.name.removesuffix('.draft.md') if is_draft else src.stem
 
     # For _index.md, use the containing folder name as the title
     if src.name == "_index.md":
         title = stem_to_title(src.parent.name)
     else:
-        title = stem_to_title(src.stem)
+        title = stem_to_title(stem)
 
     frontmatter = build_frontmatter(
         title=title,
         date=get_first_commit_date(src),
         series=series,
+        draft=is_draft
     )
 
     body = src.read_text(encoding="utf-8")
     body = rewrite_image_refs(body, src)
 
-    dest = SITE_CONTENT / Path(*parts)
+    # dest = SITE_CONTENT / Path(*parts)
+    dest_name = src.name.removesuffix('.draft.md') + '.md' if is_draft else src.name
+    dest = SITE_CONTENT / Path(*parts[:-1]) / dest_name
+
     dest.parent.mkdir(parents=True, exist_ok=True)
     dest.write_text(frontmatter + body, encoding="utf-8")
     print(f"  ✔  {src}  →  {dest}")
