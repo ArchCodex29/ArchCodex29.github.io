@@ -6,7 +6,7 @@ Greetings, fellow traveler. Do you happen to play strategy games ? Enjoy theory-
 
 Whatever the case, welcome! This is the first of - hopefully - many blog posts about my progress on creating **NanoSwarm: Dominion**.
 
-In this devlog series, I am planning on writing down about using [Godot](https://godotengine.org) to craft this game dev project, what I've learned so far and, every so often, try to showcase and explain a given concept or component that allowed me to solve some problem along the way.
+In this devlog series, I am planning on writing about using [Godot](https://godotengine.org) to craft this game dev project, what I've learned so far and, every so often, try to showcase and explain a given concept or component that allowed me to solve some problem along the way.
 
 > Why are you bothering posting this ? Couldn't you just, do the project ? Or keep the write-ups to you ?
 
