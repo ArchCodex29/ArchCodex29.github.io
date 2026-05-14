@@ -19,9 +19,9 @@ That's a fair point, imaginary voice in my head. And I could do that. But ... th
 
 Great! With that out of the way, I will try my best to give a brief intro to the game idea.
 
-**NanoSwarm: Dominion** will be a roguelite strategy game about *conquering* the world, one city at a time. For that end, the player employs a highly intelligent and evolving swarm of nanobots capable of acting and *re*acting to the city's defenses. Once victorious, the city stays under the player's control, contributing its buildings and resources to aid in further assaults.
+**NanoSwarm: Dominion** will be a roguelite strategy game about *conquering* the world, one city at a time. For that, the player employs a highly intelligent and evolving swarm of nanobots capable of acting and *re*acting to the city's defenses. Once victorious, the city stays under the player's control, contributing its buildings and resources to aid in further assaults.
 
-When attacking a city, the player will not control the swarm directly. Instead, a set of instructions needs to planned for the swarm's AI to follow. Once the plan's set, the attack can commence, leaving the player to enjoy the wreckage ... or learning a valuable lesson for the next run.
+When attacking a city, the player will not control the swarm directly. Instead, a set of instructions needs to be planned for the swarm's AI to follow. Once the plan's set, the attack can commence, leaving the player to enjoy the wreckage ... or learning a valuable lesson for the next run.
 
 > That sounds ... cool! And I got a lot of questions on how all of this will work
 
