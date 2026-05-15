@@ -13,7 +13,7 @@ In this devlog series, I am planning on writing about using [Godot](https://godo
 That's a fair point, imaginary voice in my head. And I could do that. But ... there are a few goals that I want to achieve by writing *and* posting this online:
 - By writing down my progress (ideally 'weekly'), I get a moment to slow down and review what I have learned, which helps me consolidate the information
 - By posting this online, I create a "mechanism" to *hold* me accountable to actually put some effort in every week, even if only for an hour or two. Which, in turn, helps in making a 'habit' of working on the project
-- Additionally, these posts might be able to help someone in their endeavors. Either by explaining something in a different way that suits them, or by showing that a given idea is possible. or even just entertain them for a minute. 
+- Additionally, these posts might be able to help someone in their own projects. Either by explaining something in a different way that suits them, or by showing that a given idea is possible. or even just entertain them for a minute. 
 
 > Alright, makes sense to me. Carry on
 
