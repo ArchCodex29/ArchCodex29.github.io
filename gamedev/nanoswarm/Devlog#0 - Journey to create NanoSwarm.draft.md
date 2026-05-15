@@ -31,8 +31,20 @@ In coming up with this game idea, I took inspiration from a lot of game genres (
 
 I mixed all of this work and more and wrote down the final result into my own Game Design Document (GDD). So ... I *should* be able to answer all of the questions ... in due time.
 
+> So you're not telling me anything now ? That's ... anti-climatic   
+
+I can tell *some* things now, just not everything. Otherwise this post would need pagination.
+
+As I hinted earlier, to build this game I am planning on using the Godot engine. Not only is it free of use (which is awesome for someone who's getting started!), it also is easy to pick up and start toying with ideas (never did a "proper" game before, and was able to do a prototype just fine. Even wrote about it too!). 
+
+I will be using GDScript (Godot's own language) for most of the elements, but I may fall back to using C# in case I need to create a particular component not directly connected with "visuals" or Godot-specific logic, like a manager for different types of items or something. Since I work with the language almost daily, it's more comfortable for me to create this kind of logic-heavy components with it.
+
+> Go on ...   
+
+Need to come up with different enemy types, create a system that allows to add lots of different actions, maybe a skill system, a skill tree system for meta-progression (obviously), decide between hand-crafted cities and dynamically generated cities, create *another* system to support that ... You get the picture. Seems like a lot of work (because it probably is), but ... I will tackle all of this challenges one by one.
+
 For now, here's my plan : I will put effort unto this personal project every week, creating the building blocks that will be needed to assemble the final product. I want to write blog posts like this one to talk about the recent progress or showcase a cool component, concept or technique. And see if I can pick up a friend or two along the way to help in this endeavor!
 
-Curious how this idea would work in practice? If so, hope you will stick around to learn more!
-Got a question or just wanna discuss something? Feel free to reach out!
+Curious how this idea would work in practice? If so, hope you will stick around to learn more!  
+Got a question or just wanna discuss something? Feel free to reach out!  
 And thank you for reading!
