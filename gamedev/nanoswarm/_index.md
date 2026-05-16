@@ -1,3 +1,3 @@
 ## NanoSwarm: Devlog series
 
-Greetings! Down here you can find the blog posts for my gamedev project, also known as **NanoSwarm: Dominion**
+Greetings! Down here you can find the dev blog posts for **NanoSwarm: Dominion**, a "reverse tower defense" roguelite strategy game

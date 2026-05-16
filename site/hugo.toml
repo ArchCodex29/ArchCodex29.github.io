@@ -19,7 +19,7 @@ style = "github-dark"
 
 [params]
   author = "ArchCodex29"
-  info = ["Software Engineer by Day; Theory Crafter by Night", "Website in construction"]
+  info = ["Software Engineer by Day; Theory Crafter by Night"]
   description = "ArchCodex29's personal website"
   keywords = "blog,developer,personal"
   avatarurl = "images/avatar.jpg"

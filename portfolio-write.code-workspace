@@ -10,5 +10,7 @@
 			"path": "projects"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"workbench.colorTheme": "Catppuccin Macchiato"
+	}
 }
