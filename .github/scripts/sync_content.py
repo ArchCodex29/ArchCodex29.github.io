@@ -175,7 +175,7 @@ def sync_markdown(src: Path) -> None:
     stem = src.name.removesuffix('.draft.md') if is_draft else src.stem
 
     # For _index.md, use the containing folder name as the title
-    if src.name == "_index.md" || src.name == "index.md":
+    if src.name == "_index.md" or src.name == "index.md":
         title = stem_to_title(src.parent.name)
     else:
         title = stem_to_title(stem)
