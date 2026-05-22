@@ -1,6 +1,6 @@
 # Importing Isometric Assets
 
-Greetings, fellow traveler. Have you ever struggled with importing spritesheet assets into Godot ? Or perhaps are looking into it and stumbled upon this blog post ?
+Greetings, fellow traveler. Have you ever struggled with importing spritesheet assets into Godot ? Perhaps you are looking into it and stumbled upon this blog post ?
 
 ![cover image](Devlog1_cover.png)
 
