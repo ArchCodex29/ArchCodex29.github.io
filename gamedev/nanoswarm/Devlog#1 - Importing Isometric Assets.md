@@ -4,13 +4,13 @@ Greetings, fellow traveler. Have you ever struggled with importing spritesheet a
 
 ![cover image](Devlog1_cover.png)
 
-If so, then welcome! This week I decided to search for a set or two (or four) of assets I could use as a starting point in **NanoSwarm: Dominion**, struggled with the importing process and managed to surpass them and create a example of a simple city in isometric style
+If so, then welcome! This week I decided to search for a set or two (or four) of assets I could use as a starting point in **NanoSwarm: Dominion**, struggled with the importing process and managed to surpass my difficulties and create an example of a simple city in isometric style
 
-For the concept of the game, the majority of the time will be spent in one of many procedurally generated cities (levels). But, before jumping into "how to generate a city", I should probably be able to create one manually. And, to do that, I need some visual assets. 
+For the concept of the game, the majority of the player's time will be spent in one of many procedurally generated cities (levels). But, before jumping into "how to generate a city", I should probably be able to create one manually. And, to do that, I need some visual assets. 
 
-Luckily, the internet is full of visually appealing assets that can be used for free! Best of both worlds for someone like me, who can barely draw a convincing stickman. After a few searches, I crossed paths with [Kenney's Assets](https://kenney.nl), particularly the 2D isometric ones that, not only look great, but also close to the art style I had in mind originally, which is a double win in my book. (If you want the specific ones, I will add the links on the end of this post)
+Luckily, the internet is full of visually appealing assets that can be used for free! Best of both worlds for someone like me, who can barely draw a convincing stickman. After a few searches, I crossed paths with [Kenney's Assets](https://kenney.nl), particularly the 2D isometric ones that, not only look great, but also close to the art style I had in mind originally, which is a double win in my book. (If you want the specific ones, I will add the links to the end of this post)
 
-Since I was able to find these assets in such a short time, I decided to try and create a "city sandbox" similar to the mockups I drew for this project, to see if they were a good fit.
+Since I was able to find these assets in such a short time, I decided to go ahead and try to create a "city sandbox" similar to the mockups I drew for this project, to see if they were a good fit.
 
 > *You drew mockups ? But earlier you mention you could barely draw! Also, what are mockups ?*
 
@@ -41,7 +41,7 @@ Well ... About that. I spent an hour or two scratching my head because I couldn'
 
 See ? Not one tile is correctly aligned.
 
-> *Dammit. Are you telling me these assets are broken ? They would you write about them ?!?*
+> *Dammit! Are you telling me these assets are broken ? They would you write about them ?!?*
 
 The assets are not broken. It's a bit more complicated. Turns out, the `spritesheet.png` also comes paired with a `spritesheet.xml` file that contains instructions for the engine to properly "interpret"/import the image ... For Unity. And I am not using Unity, I'm using Godot. 
 
@@ -67,6 +67,7 @@ Here's the simple walkthrough, step by step :
   * Also works by dragging the files from the FileSystem panel onto this one
 
 * Now, for each image, make sure to fix the *Texture Region* to match the PNG actual size
+
 ![Fixing Texture Region](tileset_import_manual.jpg)
 
 * If you're using Isometric assets (I am), go back to the TileSet panel and change the *Tile Size* **Y** property to be half of the original value. So, 128/2 = 64
