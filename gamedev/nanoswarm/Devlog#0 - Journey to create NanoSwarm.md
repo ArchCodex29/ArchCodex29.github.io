@@ -2,7 +2,7 @@
 
 Greetings, fellow traveler. Do you happen to play strategy games ? Enjoy theory-crafting the perfect build in a roguelite game ? Perhaps a developer looking for ideas for your own projects ?
 
-![cover image](cover.png)
+![cover image](Devlog0_cover.png)
 
 Whatever the case, welcome! This is the first of - hopefully - many blog posts about my progress on creating **NanoSwarm: Dominion**.
 
