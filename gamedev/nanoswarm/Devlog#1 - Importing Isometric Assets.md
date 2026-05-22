@@ -41,7 +41,7 @@ Well ... About that. I spent an hour or two scratching my head because I couldn'
 
 See ? Not one tile is correctly aligned.
 
-> *Dammit! Are you telling me these assets are broken ? They would you write about them ?!?*
+> *Dammit! Are you telling me these assets are broken ? Then why would you write about them ?!?*
 
 The assets are not broken. It's a bit more complicated. Turns out, the `spritesheet.png` also comes paired with a `spritesheet.xml` file that contains instructions for the engine to properly "interpret"/import the image ... For Unity. And I am not using Unity, I'm using Godot. 
 
