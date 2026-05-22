@@ -16,7 +16,7 @@ Since I was able to find these assets in such a short time, I decided to go ahea
 
 I *can't* draw, correct. But I *can* have ideas! And mockups are just "sketches" of what a given thing (web page, form, character) should look like. Not the "actual", final visual.
 
-There are a lot of tools online one can use to create mockups by drag and droping existing elements from a toolbox onto a canvas. In my case, I used [Excalidraw](https://excalidraw.com). Free, runs in a web page and I already use it to draw technical diagrams on my regular job. Different types of drawing, sure, but I like this tool. So ... I thought I could use it for this too.
+There are a lot of tools online one can use to create mockups by drag and dropping existing elements from a toolbox onto a canvas. In my case, I used [Excalidraw](https://excalidraw.com). Free, runs in a web page and I already use it to draw technical diagrams on my regular job. Different types of drawing, sure, but I like this tool. So ... I thought I could use it for this too.
 
 In any case, here's one of the mockup images. I posted this image (plus a few videos of a tech demo for this prototype) on my [X Profile](https://x.com/ApprenticeCodex), in case you're curious.
 
