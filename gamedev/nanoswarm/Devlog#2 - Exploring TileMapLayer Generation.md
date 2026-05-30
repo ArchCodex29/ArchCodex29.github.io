@@ -8,7 +8,7 @@ Then stay and read a bit! This week I decided to follow up on last week's work w
 
 > Wait a minute! I was promised a magic tool to import sprites! Where is it ?
 
-Not how I remember it. Pretty sure I said *if* anyone reaches out interested in it, I would publish it. And noone did. Besides you, figure of my imagination I use to articulate my explanations.
+Not how I remember it. Pretty sure I said *if* anyone reaches out interested in it, I would publish it. And noone did. Besides you, figure of my imagination I use to articulate my explanations.  
 But, let's make it easier. If anyone reaches out *or* I get 10 likes on this post's tweet *or* this article gets read by 10 people, I release it.
 
 Now, back to this week's update. After succesfully importing my 2D isometric assets unto Godot and was able to create a sample city, I decided to delve deeper and see what more I could get out of them.
