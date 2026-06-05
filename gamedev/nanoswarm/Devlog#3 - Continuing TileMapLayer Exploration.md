@@ -19,7 +19,7 @@ Perhaps at first, yes. But, as with ever problem in programming, there's always 
 
 A short list, for sure. But enough to test out a bit of everything. Retrieving data, placing one or more Tiles, checking if a Tile is of a given Terrain type, etc. And suffice to say, I didn't create my current version in one go. I kept iterating and improving (and fixing weird bugs -.-) over the week.
 
-> Okay, feeling a little more confident. Where fo we start ?
+> Okay, feeling a little more confident. Where do we start ?
 
 That's the spirit! I'll write a brief summary of each section I wrote. Any questions or ideas, feel free to leave a comment somewhere.
 
