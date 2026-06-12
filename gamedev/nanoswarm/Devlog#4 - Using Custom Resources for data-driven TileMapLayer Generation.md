@@ -88,7 +88,7 @@ Something something custom plugin that's being worked on, yes. Still with a lot 
 
 If you like this workflow I've created for myself, you're more than welcome to send a message *somewhere* and I can try to help. I can't write about *everything* else I'd spend all my free time doing just that.
 
-> ...Fine! Guess that's fair.
+> ...Fine! I guess that's fair.
 
 Good. And, think of it this way: it's a good opportunity to practice some specific GDScript code. May come in handy in future gamedev-related issues.
 
