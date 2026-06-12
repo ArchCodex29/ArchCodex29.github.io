@@ -97,17 +97,3 @@ With that... I think this is all for this blog post. A slightly different one si
 Hope this blog post was helpful in any way.  
 Got a question or just wanna discuss something? Feel free to reach out!  
 And thank you for reading!
-
-scaffold
-- fill_ground > moved to only using one call to TileMapLayer
-- one important comment about is_valid_terrain_peering_bit
-- workspace > task to get current weeks log (useful as scaffold for blog post)
-- Merge pull request #20 from ArchCodex29/asset-import-test
-- started defining custom CityBlueprint resource to expand on the City Tile Patterns
-- [experimental] addon to export TileSet's TileMapPattern into CityBlueprint resource
-- existing tileset patterns moved to custom resource; new place blueprint func (in testing)
-- CityBlueprint resource variable clarification; methods to place spawn and goal improved
-- progress on place_defenses logic. using the blueprint logic + first version of picking blueprint based of context data
-- small scene adjusts
-- handle_road_segments > improved getting intersection point to support points already in line
-- place_defenses > support for call with no goal or spawn info
