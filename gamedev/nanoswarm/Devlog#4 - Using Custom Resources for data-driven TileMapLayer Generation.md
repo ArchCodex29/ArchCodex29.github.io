@@ -27,7 +27,7 @@ Fair question. The full explanation is in the [official docs](https://docs.godot
 Yup. And as much as I like using json to store data, I won't say no to a built-in "proper" way of doing this! So, with all that in mind, how do we get started with custom Resources ?
 
 Creating a custom Resource class is very much like creating a custom class or adding a script to one of our Node2D's elements. Here's the gist:
-- We create a new file, ither manually in the file explorer, or via the Godot's editor and picking the `Resource` option. Just ensure it has `extends Resource`
+- We create a new file, either manually in the file explorer, or via the Godot's editor and picking the `Resource` option. Just ensure it has `extends Resource`
 - We give it a suitable class name. Example : `class_name MyCustomResource`
 - We start adding the properties we need, with the `@export` tag, so they are marked for serialization
 - We end up a custom constructor with one input parameter for each property and it's default value. 
@@ -50,11 +50,11 @@ Simple, yet effective. With this, we have a great way of storing data related to
 
 > Looks simple, yeah. But, I'm not sure how to connect this to the whole layout generation stuff
 
-Aah. That is a combination of a few ideas and tricks that I thought of while trying to answer this question : "How can I add custom metadata to the Patters I created in my TileSet?"
+Aah. That is a combination of a few ideas and tricks that I thought of while trying to answer this question : "How can I add custom metadata to the Patterns I created in my TileSet?"
 
 Don't get me wrong, the TileSet's Pattern feature is great and all (I wrote about it on my last dev blog), but I wanted a bit more out of it. For example, I want to be able to "group" my Patterns depending on their intended usage. Is it a spawn location ? A turret heavy location ? Or just plan decorations ?
 
-At runtime, I don't know with only what the Pattern gives me (the the Tile Data and its positions). In theory, I *could* associate a custom data layer to each tile (and I did) to each tile, and then cycle through each Tile in the Pattern looking for this info, but that doesn't seem like a good idea in the long run.
+At runtime, I don't know with only what the Pattern gives me (the Tile Data and its positions). In theory, I *could* associate a custom data layer to each tile (and I did) to each tile, and then cycle through each Tile in the Pattern looking for this info, but that doesn't seem like a good idea in the long run.
 
 ![group patterns before](city_blueprints_before.png)
 
@@ -66,7 +66,7 @@ In practice, looks something like this:
 
 ![CityBlueprint Resource](city_blueprint_resource.png)
 
-*I even threw in some extra `@export_category` tags to group the fields in the `Inspector` panel. Makes it look professional*
+*I even threw in some extra `@export_category` tags to group the fields in the `Inspector` panel. Makes it look professional.*
 
 With this, I can create as many Resource files as I want (1 per "Blueprint") and load them dynamically with a quick method in my helper class:
 
