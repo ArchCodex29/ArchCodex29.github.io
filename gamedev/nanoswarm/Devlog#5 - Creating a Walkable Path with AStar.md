@@ -106,6 +106,8 @@ Using this as a base, I can now improve and fine-tune this further to make it so
 - Increase the weight when it tries to make a turn (not by much), to try and avoid zig-zag-looking roads
 - And many more small adjustments!
 
+And that's all! A short (but sweet?) dev blog.
+
 Hope this blog post was helpful in any way.  
 Got a question or just wanna discuss something? Feel free to reach out!  
 And thank you for reading!
