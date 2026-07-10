@@ -18,7 +18,7 @@ Now, all the tiles used were placed *live* and we want to be able to revisit a g
 
 > But shouldn't it be *just* save more instances of the same thing ?
 
-I mean, you're not wrong. I could have done that, but the final JSON file would end up a bit too "verbose" for my tastes. And, to be fair, I kinda wanted to see what I could do if I dedicated an hour or two to it.
+I mean, you're not wrong. I could have done that, but the final JSON file would end up a bit too "verbose" for my taste. And, to be fair, I kinda wanted to see what I could do if I dedicated an hour or two to it.
 
 So, what I wanted to achieve exactly ?
 - I wanted to save important "points of interest" in the map. So far, those are the "Goal" and "Spawn" points
