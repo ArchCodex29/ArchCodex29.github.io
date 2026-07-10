@@ -10,7 +10,7 @@ I was also able to do other small improvements, such as creating a "Menu" to nav
 
 > Save and load tiles, save and load resources... I sense a theme here
 
-That's normal, since I like to do thematic things! I'll focus this blog post on the saving and loading the TileMapLayers, but decided to mention the other improvements aswell. As usual, if you're curious about anything that I don't go into detail, let me know!
+That's normal, since I like to do thematic things! I'll focus this blog post on the saving and loading the TileMapLayers, but decided to mention the other improvements as well. As usual, if you're curious about anything that I don't go into detail, let me know!
 
 If you've read my last blog post, you know I have improved my city layout generation to support multiple heights while still using 2D's TileMapLayer by using multiple of them, which allow to implement stuff like different height buildings!
 
