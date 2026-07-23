@@ -1,18 +1,20 @@
 # Creating a free, Markdown-based, personal portfolio
 
-In this article you can read about portfolios, why create one and how to build your own using free and readily available tools. 
+In this article you can read about portfolios, why create one and how to build and host your own using free and readily available tools. 
 
-Whether personally or professionally, chances are you have created at least one project. A piece of decorative art, a small website or a song. Probably even more than one. And it's natural to want to share these projects with others.
+Whether personally or professionally, chances are you have created at least one project. A piece of decorative art, a small website or a song. Probably even more than one. And it's natural you want to share these projects with others.
 
-That's what **portfolios** are for. A collection of "projects" we have worked on that we want to share or showcase. Traditionally these portfolios were big dossiers full of pages and pictures, but in these days is more common (and pratical) to have a "digital portfolio". This is where a blog website comes in handy.
+That's what **portfolios** are for. A collection of "projects" we have worked on that we want to share or showcase. Traditionally these portfolios were big dossiers full of pages and pictures, but in these days is more common (and practical) to have a "digital portfolio". This is where a blog website comes in handy.
 
-In my case, most of (if not all of) my projects are software/programming related. Which made me *not* choose one of the hundred blog platforms out there and instead look into creating my own. I already write my notes and docs in Markdown, so it would be an added advantage if it were Markdown-based. And, if possible, have it up and running for free. So, this project was born.
+In my case, most of (if not all of) my projects are software/programming related. Which made me *not* choose one of the hundred blog platforms out there and instead look into creating my own. I already write my notes and docs in Markdown, so it would be an added advantage if it were Markdown-based. And, if possible, have it up and running for free. 
+
+With this goals in mind, this project was born.
 
 > If you're not familiar with Markdown, it's a language used to write and format text documents. Think of it as plain text, with added "syntax" to perform the common text edits like *italic* and **bold**.
 
 ## Why create a portfolio ? 
 
-As I have written above, the purpose for a portfolio is to share projects with others. It can be for any reason.
+As I have written above, the purpose for a portfolio is to share projects with others. 
 
 In my case, I created this portfolio to :
 - Showcase my projects to anyone interested. 
@@ -36,7 +38,7 @@ After searching for what type of tools are available to create blog platforms an
 So, with all this in mind, here's what we need to get started :
 - A free Github account (counts both as our repository and deploy server, using [Github Pages](https://pages.github.com))
 - Git Version Control + Visual Studio Code
-  - You can use any other code editor of your choice. I mention this one since I have created some (optional) VSCode-specific configs and shortcuts, but can be skipped.
+  - You can use any other code editor of your choice. I mention this one since I have created some VSCode-specific configs and shortcuts, but can be skipped.
 - [Hugo](https://gohugo.io) framework + a suitable theme (I picked [Hugo Coder](https://github.com/luizdepra/hugo-coder))
 
 After we are done building all the needed parts, the good thing is we won't have to actively interact with most of the elements mentioned. Just focus on what matters - the Markdown files.
