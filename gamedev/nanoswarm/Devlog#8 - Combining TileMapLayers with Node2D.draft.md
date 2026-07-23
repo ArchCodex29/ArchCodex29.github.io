@@ -30,9 +30,36 @@ It ranged from the Node instance being always on top (or bottom) of everything, 
 
 No it was not. In fact, it was so troublesome for me - who's learning the Godot engine as I go - that I am making sure I write this somewhere, because if this issue happens again, I will loose my nerve. But enough of that.
 
-On the next section I will write about the different ideas I tried and the issues associated with them. If you want, you can scroll down to see what I ended up with, but I do recommend reading through the whole thing. Even if some ideas did not work for *my* use case, that doesn't mean they are *bad* ideas. They could very well help you fixing your specific problem.
+On the next section I will write about the different ideas I tried and the issues associated with them. If you want, you can scroll down to see which idea I ended up with, but I do recommend reading through the whole thing. Even if some ideas did not work for *my* use case, that doesn't mean they are *bad* ideas. They could very well help you fixing your specific problem.
 
+### Creating the Node2D Turret Scene
 
+- talk about the 3 sprites + reusing the building assets for "turret"
+- mention the atlas texture + possibly changing the chosen "section" in runtime
+- talk about the position offset + the need to take it into account when placing an instance via code
+
+### [Tried] Simply adding the Turret on the main Scene
+
+- talk about adding as child of root scene
+- talk about adding it as child of different "height" layers
+- "conclude" the y sort as the problem
+
+### [Tried] Setting per-tile Y sort
+
+- talk about setting each tile's y sort to the same value as the layer's y sort it is "expected" to be used on
+  - mention this would "limit" one tile to be used only on one layer
+- talk about the improved results, but still breaks in some scenarios
+
+### [Worked] Wrapper Node2Ds + Y sort 
+
+- talk about creating the two Node2D wrappers
+  - one for all the layers
+  - one for the enemies
+  - both have y sort enabled
+- talk about reverting the per-tile Y sort
+  - no longer have to deal with the "limitation" of "one tile = one exclusive height"
+- talk about now having a clear location for all spawned enemies, regardless of location
+  - useful when later we add logic that targets all enemies, for example
 
 (...)
 
