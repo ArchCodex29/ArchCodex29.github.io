@@ -81,6 +81,14 @@ For my use case, I will be using Windows with WSL for the dependencies + running
 
 (...)
 
+- talk about creating a hugo project (+ picking a template)
+- talk about the "normal" hugo workflow (md files location + metadata)
+- talk about my goals (separating source md files from hugo md files)
+- mention python script (point to my repo)
+- talk about "my" workflow. (write in source md files, run script, files get copied + "hydrated" with metadata)
+- mention VS Code tasks to improve workflow
+- mention the github action (point to my repo)
+
 ### Expected workflow
 
 With all the different pieces in place, here's the workflow I use when I am writing blog posts in this project :
