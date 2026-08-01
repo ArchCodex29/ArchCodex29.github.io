@@ -40,6 +40,8 @@ So, with all this in mind, here's what we need to get started :
 - Git Version Control + Visual Studio Code
   - You can use any other code editor of your choice. I mention this one since I have created some VSCode-specific configs and shortcuts, but can be skipped.
 - [Hugo](https://gohugo.io) framework + a suitable theme (I picked [Hugo Coder](https://github.com/luizdepra/hugo-coder))
+- Python installed (in order to be able to run one utility script)
+  - In theory, you don't "need" to have it installed in order to use this project, but it will help with local testing before syncing changes to the repository.
 
 After we are done building all the needed parts, the good thing is we won't have to actively interact with most of the elements mentioned. Just focus on what matters - the Markdown files.
 
@@ -63,8 +65,21 @@ Head over to the repository's `Settings` (last tab on the top row) and then look
 
 You can now clone the repository on your own computer and start preparing the project.
 
+> If you're new working with Git, don't worry. On a blank repository, GitHub shows you instructions on what commands to run to get started. Later on, to "send" your changes from your computer to the online repository, VS Code also has a clear interface to do so.
+
 ### Setting up the project
 
+Now that we have a place to host our project, it's time to start creating our portfolio.
+
+This section will be similar to the guidance you can find on Hugo's page. In fact, it was on top of said guides I have built this project, so I strongly suggest taking a look at those, with a special focus on the [Quick Start](https://gohugo.io/getting-started/quick-start/) and the [Hosting on GitHub Pages](https://gohugo.io/host-and-deploy/host-on-github-pages/).
+
+The first step is to [install Hugo](https://gohugo.io/installation/). You can install it directly on your computer (the easy, normal path) or use a `Docker` dev container or, if you are using Windows, use `WSL` to to both isolate the dependencies and have access to a "Linux experience" during this, in lack of better words.
+
+> If you recognize all of the terms I just mentioned, you can go ahead and pick your favorite method of working and adapt the tooling to suit your workflow. If you're new and eager to learn, I'd suggest reading about how to set up WSL on your computer (will be useful on your future projects) then coming back to this guide. Otherwise, you can just install what you need normally and keep following along.
+
+For my use case, I will be using Windows with WSL for the dependencies + running particular commands and tasks.
+
+(...)
 
 ### Expected workflow
 
@@ -79,3 +94,9 @@ If I have the need for updating the website configuration itself or other simila
 
 ## Closing Notes
 
+After creating this project (which I mention in my portfolio, which is a project), you should be able to write your blog posts about any topic you want and publish it online for everyone to see, without spending a cent. 
+For me personally, not only I was able to create a portfolio for my own use, I was also able to learn about `Hugo` and `GitHub Pages` (a feature I already wanted to try out), so it was a worthy project for me.
+
+Hope this blog post was helpful in any way.  
+Got a question or just wanna discuss something? Feel free to reach out!  
+And thank you for reading!
