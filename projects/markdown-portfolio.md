@@ -100,6 +100,8 @@ hugo server
 
 If all goes well, you will see in your terminal the local URL for the website. Follow it and you should see the sample home page.
 
+Later on, you will probably want to change some settings to turn this into *your* portfolio. When that moment arrives, I recommend reading about [Hugo Configuration](https://gohugo.io/configuration/introduction/).
+
 On a typical Hugo project, this would be the part where you would go to the generated `Content` folder on our project and start creating your own sub folders and markdown files, which would then be interpreted by Hugo and turned into source files for our website. You would also write some "metadata" on top of each markdown file to allow you to set some "specific" info for each post, such as the title, the creation date or the series it belongs to, in a format that the Hugo framework has defined.
 
 *However*, when I started creating this project for myself, I did not want to "tie" my markdown files specifically to Hugo (or any other tool, for that matter). In fact, when I am actively writing blog posts (such as this one) I don't even want to *see* any code files nor the terminal. 
@@ -107,6 +109,8 @@ On a typical Hugo project, this would be the part where you would go to the gene
 So, to improve the base workflow for my needs and wants, I decided to write all my "raw" markdown files *outside* the site folder and create a Python script that, when executed, copies the files to the respective locations *inside* the `site` folder, calculating and adding any "metadata" to those files as needed. This way, I don't have to think about Hugo-specific semantics while still taking advantage of them.
 
 You can find the full script on this portfolio's repository, under `.github\scripts\sync_content.py`. After defining which folders/files to watch for, where to copy them and which metadata to generate, I grabbed the specification and had Claude generate the script in my stead. If, in the future, there's any change you'd like for yourself (for example, you want to automatically add "tags" based on some criteria), and you're not well versed in Python, I suggest you do something similar. Don't forget to review the results!
+
+By default, it reads any folder other than the `site` itself. Also supports subfolders, where it automatically creates a "series" for it. For example, I have a `gamedev` folder with a `nanoswarm` subfolder. All blog posts I write under this folder will belong to the "nanoswarm" series. I can also write on blog posts and not have them automatically published by adding ".draft" to the file name. So, a file named "my project.md" would be "my project.draft.md". Then I can just remove it when it's done for publishing.
 
 Also, important to mention : The script not only copies the markdown files to their respective location under `content`, it will also copy other assets (images, gifs and the like) to `static\images` so they can be presented to the readers too!
 
