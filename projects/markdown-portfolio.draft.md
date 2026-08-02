@@ -45,6 +45,8 @@ So, with all this in mind, here's what we need to get started :
 
 After we are done building all the needed parts, the good thing is we won't have to actively interact with most of the elements mentioned. Just focus on what matters - the Markdown files.
 
+You can also check my [portfolio repository](https://github.com/ArchCodex29/ArchCodex29.github.io) if you want to see the final result or copy a given file.
+
 > Curious how viable this plan is ? Well, this article - this website - was built with this plan up here. If you're reading this, it's working!
 
 ### Setting up the repository
@@ -73,21 +75,80 @@ Now that we have a place to host our project, it's time to start creating our po
 
 This section will be similar to the guidance you can find on Hugo's page. In fact, it was on top of said guides I have built this project, so I strongly suggest taking a look at those, with a special focus on the [Quick Start](https://gohugo.io/getting-started/quick-start/) and the [Hosting on GitHub Pages](https://gohugo.io/host-and-deploy/host-on-github-pages/).
 
-The first step is to [install Hugo](https://gohugo.io/installation/). You can install it directly on your computer (the easy, normal path) or use a `Docker` dev container or, if you are using Windows, use `WSL` to to both isolate the dependencies and have access to a "Linux experience" during this, in lack of better words.
+The first step is to [install Hugo](https://gohugo.io/installation/). You can install it directly on your computer (the easy, normal path) or use a `Docker` dev container or, if you are using Windows, use `Windows Subsystem for Linux (WSL)` to to both isolate the dependencies and have access to a "Linux experience" during this, in lack of better words.
 
-> If you recognize all of the terms I just mentioned, you can go ahead and pick your favorite method of working and adapt the tooling to suit your workflow. If you're new and eager to learn, I'd suggest reading about how to set up WSL on your computer (will be useful on your future projects) then coming back to this guide. Otherwise, you can just install what you need normally and keep following along.
+> If you didn't recognize most of those terms I just mentioned, it's fine. You can simply install the required tools on your PC and keep on following the guid. However, if you're eager to learn, I'd suggest reading about how to set up WSL (will be useful on your future projects) then coming back to this guide.
 
-For my use case, I will be using Windows with WSL for the dependencies + running particular commands and tasks.
+For the remaining of this section, I will proceed with a setup of Windows + WSL (for the dependencies + running particular commands and tasks) in mind.
 
-(...)
+To install Hugo on your WSL environment you just need to use your Distro's package manager. You can check the exact command on the install link above, but assuming you're using a common Debian distro, it should be something like this:
 
-- talk about creating a hugo project (+ picking a template)
-- talk about the "normal" hugo workflow (md files location + metadata)
-- talk about my goals (separating source md files from hugo md files)
-- mention python script (point to my repo)
-- talk about "my" workflow. (write in source md files, run script, files get copied + "hydrated" with metadata)
-- mention VS Code tasks to improve workflow
-- mention the github action (point to my repo)
+```bash
+sudo apt install hugo
+```
+With this tool installed, we can now use it to create the project. We will also need to pick a theme to go along with it. I will be using [Hugo Coder](https://github.com/luizdepra/hugo-coder) as my theme of choice. You can also go to ahead and pick yours from this [Hugo Themes](https://themes.gohugo.io) page, but don't forget to check the chosen template's repository since some templates have specific instructions on how to set them up.
+
+Here are the commands needed to create a folder, create a new project with the chosen template
+
+```bash
+hugo new project site
+cd site
+git submodule add https://github.com/luizdepra/hugo-coder.git themes/hugo-coder
+echo "theme = 'hugo-coder'" >> hugo.toml
+hugo server
+```
+
+If all goes well, you will see in your terminal the local URL for the website. Follow it and you should see the sample home page.
+
+On a typical Hugo project, this would be the part where you would go to the generated `Content` folder on our project and start creating your own sub folders and markdown files, which would then be interpreted by Hugo and turned into source files for our website. You would also write some "metadata" on top of each markdown file to allow you to set some "specific" info for each post, such as the title, the creation date or the series it belongs to, in a format that the Hugo framework has defined.
+
+*However*, when I started creating this project for myself, I did not want to "tie" my markdown files specifically to Hugo (or any other tool, for that matter). In fact, when I am actively writing blog posts (such as this one) I don't even want to *see* any code files nor the terminal. 
+
+So, to improve the base workflow for my needs and wants, I decided to write all my "raw" markdown files *outside* the site folder and create a Python script that, when executed, copies the files to the respective locations *inside* the `site` folder, calculating and adding any "metadata" to those files as needed. This way, I don't have to think about Hugo-specific semantics while still taking advantage of them.
+
+You can find the full script on this portfolio's repository, under `.github\scripts\sync_content.py`. After defining which folders/files to watch for, where to copy them and which metadata to generate, I grabbed the specification and had Claude generate the script in my stead. If, in the future, there's any change you'd like for yourself (for example, you want to automatically add "tags" based on some criteria), and you're not well versed in Python, I suggest you do something similar. Don't forget to review the results!
+
+Also, important to mention : The script not only copies the markdown files to their respective location under `content`, it will also copy other assets (images, gifs and the like) to `static\images` so they can be presented to the readers too!
+
+To further aid me during all this, I have also created a couple of VS Code tasks to run the common commands for me, instead of having to memorize them and write them every single time. You can find them under `.vscode\tasks.json`. You should find tasks to run the before-mentioned "sync" script, build and run the website using Hugo and so on. You can run tasks in VS Code by pressing `F1` > type `Run Task` and press enter > picking an available task.
+
+Here's an example of one of them :
+
+```json
+{
+  "label": "Hugo: Sync content",
+  "detail": "Run the sync script",
+  "type": "shell",
+  "command": "python .github/scripts/sync_content.py",
+  "options": {
+    "shell": {
+      "executable": "wsl",
+      "args": ["-d", "ArchDaemon"]
+    }
+  },
+  "group": "none",
+  "presentation": {
+    "reveal": "always",
+    "panel": "shared",
+    "clear": true
+  }
+},
+```
+
+One thing to watch out for : these tasks are adapted to run directly under WSL, using an instance named "ArchDaemon". Adjust the tasks to use your WSL's instance name or just remove the section `options` section if you're not using WSL. (You could also adapt it to run inside an ephemoral Docker instance, for example. That could be fun.)
+
+Since I am writing about useful files you should copy, allow me to mention one more. Under `.github\workflows\hugo.yml` you will find a GitHub Action named "Sync content, Build and Deploy" which allows GitHub to, well, do just that! It is set up to run automatically when you push your changes to the `main` branch (you can change to any branch name) and to run manually by you. It will use the Python script to copy your original files to their destinations, build the website source files using Hugo and then publish them to your (free!) GitHub Page website. This GitHub Action file is based on Hugo's own suggested file, to which I have added a few steps to handle the custom script I have created.
+
+And finally (this bit is mostly a quality-of-life, but I like it), I have also created a few ".code-workspace" files to allow me to open the project with VS Code and focus on a particular section of the project. I have created a `portfolio-dev.code-workspace` that, when used, shows me only the Hugo website and relevant code folders, and a `portfolio-write.code-workspace` that only shows me the folders I have chosen with my original markdown files (and the workspace I use the most now). 
+
+With all these files in place, you can test this by :
+- Create your first folder to store your Markdown files. For example "projects"
+- On this folder, create a sample "test.md"
+- Run the task `Hugo: Sync and Serve`
+- Check locally if everything is running and showing as intended
+- If you're happy with the results, push your progress to the repository
+- Wait for a minute or two while GitHub runs our Action (you can also check the progress under the `Actions` tab on your repository page)
+- Visit your newly published portfolio by going to <your_nickname_here>.github.io
 
 ### Expected workflow
 
@@ -98,7 +159,7 @@ With all the different pieces in place, here's the workflow I use when I am writ
 - At the end of the writing session, commit and push the changes
 - Automatically, the Github Action triggers, building and publishing a new version of the website
 
-If I have the need for updating the website configuration itself or other similar sections, I can either open the "dev" workspace or just the plain project folder. Can be useful to check how the rendered website looks locally after a big change before publishing, for example.
+If I ever have the need to update the website configuration itself or other similar sections, I can either open the "dev" workspace or just the plain project folder. Can be useful to check how the rendered website looks locally after a big change before publishing, for example.
 
 ## Closing Notes
 
