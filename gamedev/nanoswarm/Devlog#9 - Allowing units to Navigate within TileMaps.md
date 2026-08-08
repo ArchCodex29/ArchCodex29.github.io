@@ -44,7 +44,7 @@ Luckily, there is a perfect solution for my needs. There is a way to set up `Nav
 
 Yup! It means we can start by implementing the more approachable version, test it and, once we are ready for *more*, move on to the more powerfull version *while* reusing all of our previous work!
 
-So, here's the plan : For starters, I will set up a `NavigationLayer` and showcase it a little bit. Then I'll move on to the `NavigationRegion2D` and see how far I can take it. Feel free to skip ahead to that version if you already the basics, or stop after setting up the first one if it's enough for what you need.
+So, here's the plan : For starters, I will set up a `NavigationLayer` and showcase it a little bit. Then I'll move on to the `NavigationRegion2D` and see how far I can take it. Feel free to skip ahead to that version if you already have the basics down, or stop after setting up the first one if it's enough for what you need.
 
 ## Creating a simple "Navigator" node
 
@@ -131,7 +131,7 @@ This setup works just fine because, at the end of the day, we achieved a simple 
 
 Neither did I, when I reached this point. But those are some common examples that the `NavigationRegion2D` allow us to do, after setting it up.
 
-The typical setup is pretty straighforward. You add a `NavigationRegion2D` as a child to your scene, then go over to the `Inspector` tab and create a new `NavigatinoPolygon`. We then will be able to use the Editor's tools to draw a "region" (typically a rectangle) where we want our units to navigate on. We may then other elements to create obstacles (for example a node with a `NavigationObstacle2D` child). When we are done setting it up, we press "Bake Navigation" and we should have a bunch of geometric figures within that region we drew, representing the walkable surface. 
+The typical setup is pretty straighforward. You add a `NavigationRegion2D` as a child to your scene, then go over to the `Inspector` tab and create a new `NavigationPolygon`. We then will be able to use the Editor's tools to draw a "region" (typically a rectangle) where we want our units to navigate on. We may then other elements to create obstacles (for example a node with a `NavigationObstacle2D` child). When we are done setting it up, we press "Bake Navigation" and we should have a bunch of geometric figures within that region we drew, representing the walkable surface. 
 
 This works fine *if* we are using static maps. But I am generating mine, so I need to also "bake" the region after that. Also, don't know "exactly" the dimensions of my map (Well, technically I do. But pretend I don't) nor do I want "all" tiles within its boundaries to be walkable. Only road tiles and plain ground tiles. *And* I want for my units to walk on the ground tiles *only* if there are no road tiles. This puts me in a particular spot.
 
@@ -150,7 +150,7 @@ With magic. Or effort. One of the two. Jokes aside, it did take some effort to f
 
 First step, the creation of the two `NavigationLayers`, is pretty straighforward. Feel free to go back and read that section again. We could even do these with only one layer, and set all tiles (road and ground) to it, but I like having both of these at the `TileSet` level, purely for organization reasons.
 
-Next, we create two instances of the `NavigationRegion2D` node on our scene and, in each, create the `NavigationPolygon` resource. But this time, we **don't** setup the region with the editor. Now, if we look at the the `Inspector` tab, under `Geometry`, we have two very specific properties I want to highlight: the "Source Geometry Mode" and "Source Geometry Group". These two combined allow us to set up from which nodes our NavRegions pull data from when "baking". By default, they pull from everything in the scene. However, if we change the "Mode" to "Group With Children" and write that group's name on the other property, we can filter out to only pull data from the nodes *we* want.
+Next, we create two instances of the `NavigationRegion2D` node on our scene and, in each, create the `NavigationPolygon` resource. But this time, we **don't** setup the region with the editor. Now, if we look at the `Inspector` tab, under `Geometry`, we have two very specific properties I want to highlight: the "Source Geometry Mode" and "Source Geometry Group". These two combined allow us to set up from which nodes our NavRegions pull data from when "baking". By default, they pull from everything in the scene. However, if we change the "Mode" to "Group With Children" and write that group's name on the other property, we can filter out to only pull data from the nodes *we* want.
 
 Here's the good news and the *tricky* news:
 - The good news: This means we can set it up so one region only looks at one `TileMapLayer` (by setting it to "group A", for example) and have another region only look at another `TileMapLayer` with a different group.
