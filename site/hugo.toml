@@ -16,6 +16,8 @@ pagerSize = 20
 
 [markup.highlight]
 style = "github-dark"
+[markup.goldmark.extensions.typographer]
+disable = true
 
 [params]
   author = "ArchCodex29"
