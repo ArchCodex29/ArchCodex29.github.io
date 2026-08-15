@@ -6,34 +6,38 @@ Whether personally or professionally, chances are you have created at least one 
 
 That's what **portfolios** are for. A collection of "projects" we have worked on that we want to share or showcase. Traditionally these portfolios were big dossiers full of pages and pictures, but in these days is more common (and practical) to have a "digital portfolio". This is where a blog website comes in handy.
 
-In my case, most of (if not all of) my projects are software/programming related. Which made me *not* choose one of the hundred blog platforms out there and instead look into creating my own. I already write my notes and docs in Markdown, so it would be an added advantage if it were Markdown-based. And, if possible, have it up and running for free. 
+Since I have a background in software development, the idea of "creating my own website" quickly popped in my head. By doing so, I would be able to present the information in any format I choose, instead of having to learn how to use one of the hundred blog platforms out there. I would also like for the website to source it's contents from plain files and folders. And the cherry on top ? Have it be up and running for free.
 
 With this goals in mind, this project was born.
 
-> If you're not familiar with Markdown, it's a language used to write and format text documents. Think of it as plain text, with added "syntax" to perform the common text edits like *italic* and **bold**.
-
 ## Why create a portfolio ? 
 
-As I have written above, the purpose for a portfolio is to share projects with others. 
+The purpose of a portfolio is to share projects with others. Plain and simple.
 
-In my case, I created this portfolio to :
-- Showcase my projects to anyone interested. 
-  - May be someone looking for inspiration to create something I have already done.
-  - May be a recruiter curious about what I do outside of work.
-- Document my projects for future reference.
-  - Useful for me to consolidate what I've learnt during a given project, since I have to understand what I have created to be able to write about it.
-  - Can be read by others interested in replicating what they are seeing.
-- (Bonus) Since I am building this myself, this portfolio counts as a project to show in said portfolio.
+You could be a digital artist looking to have a place with examples of your work. You could be tinkerer who would like to share the latest project with online friends. You could even just be thinking about the topic and are looking for your first project. There are plenty of good reasons to have a portfolio.
 
-## Building the portfolio
+For me, I created this portfolio project to:
+* Have a place to document my projects
+* Share with people interested in my work
+* Try out different tools as its own project (which, in turn, will be in my portfolio)
 
-After searching for what type of tools are available to create blog platforms and matching those to what I wanted to achieve - a free, markdown-based, blog website - I have come across two that can be combined to achieve just what I wanted.
+## Creating my portfolio
+
+To create this project, I didn't necessarily have to start from scratch. There are plenty of tools out there that can be useful in building something like this. The trick is choosing those that suit our needs and wants best.
+
+For example, I decided early that I wanted to write my content using simple `Markdown` files, as its the format I use normally to write notes or documentation. So I focused on tools that were able to use markdown files as a "source of information". For those wondering, `Markdown` is a language used to write and format text documents. Think of it as plain text, with added "syntax" to perform the common text edits like *italic* and **bold**.
+
+After searching up the different available tools to create blog platforms and matching those to what I wanted to achieve - a free, markdown-based, blog website - I have come across two that can be combined to achieve just what I wanted :
 
 - For the blog platform itself, I have found the [Hugo](https://gohugo.io) framework which allows us to generate a website from Markdown files.
 - For hosting the website, we can leverage [Github Pages](https://pages.github.com) to do just that. It allows us to host a website built from a public Github repository. 
   - And since we will want to save this project (plus all the content we write) somewhere, it takes care of that too.
 
-> Note: If you want to build this for yourself but you're not familiar with "code", don't worry. Most of the needed steps are configurations, so you can still follow along.
+Combining the two gives me pretty much everything I needed to get the project up and running. I've since then customized it with a few tools and shortcuts to better suit my workflow and - at the time of writing - published online a few articles. So, I'd say it's a success.
+
+## Building your own portfolio
+
+In this section I will write (to the best of my ability) a "walkthrough" on how you could build this portfolio project for yourself. While having a developer background certainly helps, it's not a "requirement". Most of the steps are configuration-based, so if you're not familiar with "code", don't worry too much. It will get "technical" at times, but nothing a web search can't fix.
 
 So, with all this in mind, here's what we need to get started :
 - A free [GitHub](https://github.com) account (counts both as our repository and deploy server, using [GitHub Pages](https://pages.github.com))
@@ -47,7 +51,21 @@ After we are done building all the needed parts, the good thing is we won't have
 
 You can also check my [portfolio repository](https://github.com/ArchCodex29/ArchCodex29.github.io) if you want to see the final result or copy a given file.
 
-> Curious how viable this plan is ? Well, this article - this website - was built with this plan up here. If you're reading this, it's working!
+### Quick Macro Plan
+
+If you want the short version before diving into the details, here is the basic path I followed.
+
+* Create a GitHub repository
+* Enable GitHub Pages
+* Install Hugo on your machine
+* Create a Hugo website and pick a theme
+* Write your first blog in Markdown
+* Create a Github Action to publish the website
+* (Optionally) Add scripts and tools to improve your workflow
+* Push to GitHub
+* Let the Action deploy the website
+* ...
+* Profit
 
 ### Setting up the repository
 
@@ -65,9 +83,7 @@ With the name chosen and the repository created, all that's left is to change on
 
 Head over to the repository's `Settings` (last tab on the top row) and then look for a menu called `Pages`. You should see a section named `Build and deployment` with a dropdown menu. Change it's value to "Github Actions" and you're set!
 
-You can now clone the repository on your own computer and start preparing the project.
-
-> If you're new working with Git, don't worry. On a blank repository, GitHub shows you instructions on what commands to run to get started. Later on, to "send" your changes from your computer to the online repository, VS Code also has a clear interface to do so.
+You can now clone the repository on your own computer and start preparing the project. Friendly reminder : GitHub shows basic steps on how to do so on a blank repository.
 
 ### Setting up the project
 
@@ -76,8 +92,6 @@ Now that we have a place to host our project, it's time to start creating our po
 This section will be similar to the guidance you can find on Hugo's page. In fact, it was on top of said guides I have built this project, so I strongly suggest taking a look at those, with a special focus on the [Quick Start](https://gohugo.io/getting-started/quick-start/) and the [Hosting on GitHub Pages](https://gohugo.io/host-and-deploy/host-on-github-pages/).
 
 The first step is to [install Hugo](https://gohugo.io/installation/). You can install it directly on your computer (the easy, normal path) or use a `Docker` dev container or, if you are using Windows, use `Windows Subsystem for Linux (WSL)` to to both isolate the dependencies and have access to a "Linux experience" during this, in lack of better words.
-
-> If you didn't recognize most of those terms I just mentioned, it's fine. You can simply install the required tools on your PC and keep on following the guid. However, if you're eager to learn, I'd suggest reading about how to set up WSL (will be useful on your future projects) then coming back to this guide.
 
 For the remaining of this section, I will proceed with a setup of Windows + WSL (for the dependencies + running particular commands and tasks) in mind.
 
