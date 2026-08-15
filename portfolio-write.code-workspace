@@ -11,6 +11,7 @@
 		}
 	],
 	"settings": {
-		"workbench.colorTheme": "Catppuccin Macchiato"
+		"workbench.colorTheme": "Catppuccin Macchiato",
+		"cSpell.useLocallyInstalledCSpellDictionaries": false
 	}
 }

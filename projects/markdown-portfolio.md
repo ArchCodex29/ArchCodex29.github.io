@@ -23,7 +23,7 @@ In my case, I created this portfolio to :
 - Document my projects for future reference.
   - Useful for me to consolidate what I've learnt during a given project, since I have to understand what I have created to be able to write about it.
   - Can be read by others interested in replicating what they are seeing.
-- (Bonus) Since I am building this myself, this portfolio counts as a project to show in said portfolio. Portfolio-ception.
+- (Bonus) Since I am building this myself, this portfolio counts as a project to show in said portfolio.
 
 ## Building the portfolio
 
@@ -110,7 +110,7 @@ So, to improve the base workflow for my needs and wants, I decided to write all 
 
 You can find the full script on this portfolio's repository, under `.github\scripts\sync_content.py`. After defining which folders/files to watch for, where to copy them and which metadata to generate, I grabbed the specification and had Claude generate the script in my stead. If, in the future, there's any change you'd like for yourself (for example, you want to automatically add "tags" based on some criteria), and you're not well versed in Python, I suggest you do something similar. Don't forget to review the results!
 
-By default, it reads any folder other than the `site` itself. Also supports subfolders, where it automatically creates a "series" for it. For example, I have a `gamedev` folder with a `nanoswarm` subfolder. All blog posts I write under this folder will belong to the "nanoswarm" series. I can also write on blog posts and not have them automatically published by adding ".draft" to the file name. So, a file named "my project.md" would be "my project.draft.md". Then I can just remove it when it's done for publishing.
+By default, it reads any folder other than the `site` itself. Also supports sub-folders, where it automatically creates a "series" for it. For example, I have a `gamedev` folder with a `nanoswarm` subfolder. All blog posts I write under this folder will belong to the "nanoswarm" series. I can also write on blog posts and not have them automatically published by adding ".draft" to the file name. So, a file named "my project.md" would be "my project.draft.md". Then I can just remove it when it's done for publishing.
 
 Also, important to mention : The script not only copies the markdown files to their respective location under `content`, it will also copy other assets (images, gifs and the like) to `static\images` so they can be presented to the readers too!
 
@@ -139,7 +139,7 @@ Here's an example of one of them :
 },
 ```
 
-One thing to watch out for : these tasks are adapted to run directly under WSL, using an instance named "ArchDaemon". Adjust the tasks to use your WSL's instance name or just remove the section `options` section if you're not using WSL. (You could also adapt it to run inside an ephemoral Docker instance, for example. That could be fun.)
+One thing to watch out for : these tasks are adapted to run directly under WSL, using an instance named "ArchDaemon". Adjust the tasks to use your WSL's instance name or just remove the section `options` section if you're not using WSL. (You could also adapt it to run inside an ephemeral Docker instance, for example. That could be fun.)
 
 Since I am writing about useful files you should copy, allow me to mention one more. Under `.github\workflows\hugo.yml` you will find a GitHub Action named "Sync content, Build and Deploy" which allows GitHub to, well, do just that! It is set up to run automatically when you push your changes to the `main` branch (you can change to any branch name) and to run manually by you. It will use the Python script to copy your original files to their destinations, build the website source files using Hugo and then publish them to your (free!) GitHub Page website. This GitHub Action file is based on Hugo's own suggested file, to which I have added a few steps to handle the custom script I have created.
 
