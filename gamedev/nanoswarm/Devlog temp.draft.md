@@ -3,16 +3,22 @@ scaffold:
 - ~~new "health", "enemy data" "turret data" resources. turret scene adapted; health_bar scene adapted~~
 - ~~added "attack range" and "detection range" to turret (with some prop changes for isometric)~~****
 - ~~(wip) copied look and shoot logic from dummy turret unto turret node~~
-- tile set > new navigation layer for "road" tiles; test path follower using NavigationAgent2D
-- testing out pathing with dummy path follower and repurposing original swarm unit
-- small adjust to the swarm unit to use the basic avoidance option of the nav agent
-- adjusted the ground tile's y sort origin to allow swarm unit to render behind buildings
-- [test] two ground layers (one for road tiles, one for everything else) + two navigation layers to feed into two nav regions for better nav with cost in mind
-- city layout > created new nav mesh nodes; gen hud > prepared new buttons and the like
-- city > save / export now handling the new road layer; map gen still needs a touch
+- ~~tile set > new navigation layer for "road" tiles; test path follower using NavigationAgent2D~~
+- ~~testing out pathing with dummy path follower and repurposing original swarm unit~~
+- ~~small adjust to the swarm unit to use the basic avoidance option of the nav agent~~
+- ~~adjusted the ground tile's y sort origin to allow swarm unit to render behind buildings~~
+- ~~[test] two ground layers (one for road tiles, one for everything else) + two navigation layers to feed into two nav regions for better nav with cost in mind~~
+- ~~city layout > created new nav mesh nodes; gen hud > prepared new buttons and the like~~
+- ~~city > save / export now handling the new road layer; map gen still needs a touch~~
+
 - found a way to retrieve tile info without going through TileMapLayer
 - [wip] started cleaning up city map gen
 - no need to clear what's not being used (floor 0 layer)
 - refactor to use a 2 step map generation. intent > instructions > data
 - quick fixs
 - turret > in attack range not working as intended; disabling for now
+
+- city > plan phase > init with sample skills
+- city > goal marker cleanup
+- tutorial city > spawn swarm after map load
+- [wip] dumb tutorial step system
