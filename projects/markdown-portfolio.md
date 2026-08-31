@@ -23,7 +23,7 @@ For me, I created this portfolio project to:
 
 ## Creating my portfolio
 
-To create this project, I didn't necessarily have to start from scratch. There are plenty of tools out there that can be useful in building something like this. The trick is choosing those that suit our needs and wants best.
+To create this project, I didn't necessarily have to start from scratch. There are plenty of tools out there that can be useful in building something like this. The trick is choosing those that suit our needs and what's best.
 
 For example, I decided early that I wanted to write my content using simple `Markdown` files, as its the format I use normally to write notes or documentation. So I focused on tools that were able to use markdown files as a "source of information". For those wondering, `Markdown` is a language used to write and format text documents. Think of it as plain text, with added "syntax" to perform the common text edits like *italic* and **bold**.
 
