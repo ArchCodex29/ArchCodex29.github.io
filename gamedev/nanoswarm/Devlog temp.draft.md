@@ -22,3 +22,14 @@ scaffold:
 - city > goal marker cleanup
 - tutorial city > spawn swarm after map load
 - [wip] dumb tutorial step system
+
+- excalidraw project file for blog covers
+- [wip] tutorial > move to conquer phase by reusing existing stuff
+- straggler
+
+- [test] on swarm spotted, swapped the target position to a test point to see if diagnosis was right (it is)
+- [test] same test, but using a manually placed marker
+- turret > new method to return up to 4 "candidate points; use method for unit picking turret as target
+- city_gen > quick fix
+- [wip] combat results screen with victory/defeat; still need to design good triggers for this transition
+- [wip] combat results with time elapsed metrics; new 'destroyed' signal on swarm unit; on all units destroyed, trigger defeat
