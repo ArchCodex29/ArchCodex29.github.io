@@ -108,6 +108,8 @@ func get_reachable_perimeter_points() -> Array[Vector2]:
 	return side_points
 ```
 
+When I am instancing each Turret, I can very easily grab it's position on the `TileMapLayer`, check the 4 adjacent cells and set the 4 flags accordingly. 
+
 And lastly, on my existing code that assigns the target position to my units, all I have to do is pick the closest one (Godot has methods to quickly do that math). Something like so : 
 
 ```
