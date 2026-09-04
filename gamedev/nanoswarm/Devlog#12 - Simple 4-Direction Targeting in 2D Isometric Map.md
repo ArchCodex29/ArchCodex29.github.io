@@ -4,7 +4,7 @@ Greetings, fellow traveler. Having trouble with choosing the correct point for y
 
 ![cover image](Devlog12_cover.png)
 
-If so, keep reading! In this blog post, I will focus on how I improved my unit's movement target position by choosing a "better" point, as well as giving a general update on my progress in creating a the Tutorial.
+If so, keep reading! In this blog post, I will focus on how I improved my unit's movement target position by choosing a "better" `Vector2D` point, as well as giving a general update on my progress in creating the Tutorial.
 
 *Feel free to jump directly to the [simple 4-direction targeting](#simple-4-direction-targeting) section I wrote*
 
