@@ -1,35 +1,10 @@
-scaffold:
-- ~~new "defenses" node in city scene for organization purposes~~
-- ~~new "health", "enemy data" "turret data" resources. turret scene adapted; health_bar scene adapted~~
-- ~~added "attack range" and "detection range" to turret (with some prop changes for isometric)~~****
-- ~~(wip) copied look and shoot logic from dummy turret unto turret node~~
-- ~~tile set > new navigation layer for "road" tiles; test path follower using NavigationAgent2D~~
-- ~~testing out pathing with dummy path follower and repurposing original swarm unit~~
-- ~~small adjust to the swarm unit to use the basic avoidance option of the nav agent~~
-- ~~adjusted the ground tile's y sort origin to allow swarm unit to render behind buildings~~
-- ~~[test] two ground layers (one for road tiles, one for everything else) + two navigation layers to feed into two nav regions for better nav with cost in mind~~
-- ~~city layout > created new nav mesh nodes; gen hud > prepared new buttons and the like~~
-- ~~city > save / export now handling the new road layer; map gen still needs a touch~~
 
-- found a way to retrieve tile info without going through TileMapLayer
-- [wip] started cleaning up city map gen
-- no need to clear what's not being used (floor 0 layer)
-- refactor to use a 2 step map generation. intent > instructions > data
-- quick fixs
-- turret > in attack range not working as intended; disabling for now
+- found a way to retrieve tile info without going through TileMapLayer (TileSetSource)
 
-- city > plan phase > init with sample skills
-- city > goal marker cleanup
-- tutorial city > spawn swarm after map load
-- [wip] dumb tutorial step system
-
-- excalidraw project file for blog covers
-- [wip] tutorial > move to conquer phase by reusing existing stuff
-- straggler
-
-- [test] on swarm spotted, swapped the target position to a test point to see if diagnosis was right (it is)
-- [test] same test, but using a manually placed marker
-- turret > new method to return up to 4 "candidate points; use method for unit picking turret as target
-- city_gen > quick fix
-- [wip] combat results screen with victory/defeat; still need to design good triggers for this transition
-- [wip] combat results with time elapsed metrics; new 'destroyed' signal on swarm unit; on all units destroyed, trigger defeat
+- moved "start game" method call from tutorial city to idle city state
+- new kenney icons for sample actions and triggers
+- city > map gen state implemented; code cleanup; other tests and goodies
+- added "call deferred", like the above usage
+- map gen > save to file on exit; other qols
+- new "core" building; replaced goalmarker for it; everything city-related adjusted to it; swarm unit set_* methods adjusted; health component improv
+- spawn core > attach health bar
