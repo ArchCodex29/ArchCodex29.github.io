@@ -4,7 +4,7 @@ Greetings, fellow traveler. Back to check on my most recent developments ? Maybe
 
 ![cover image](Devlog13_cover.png)
 
-Wonder no more! In this week's blog post, I quickly showcase the new visuals for the Triggers and Actions, introduce the newly introduced "Core" `Node` and highlight a small component I really like - the health bar!
+Wonder no more! In this week's blog post, I quickly showcase the new visuals for the Triggers and Actions, talk about the newly introduced "Core" `Node` and highlight a small component I really like - the health bar!
 
 ## New assets acquired
 During the recent developments, one thing that stood out to me were the placeholder icons I was using for the "card-like" visual representation of the sample Trigger and Actions I implemented for the game.
