@@ -41,7 +41,7 @@ So, one of the recent additions was the "Core" building that is spawned on top o
 
 > It's ... a building
 
-It may not look like much - partially cause I am lazy. I just took an existing building visual I had and used the `modulate` property to make it blue - but it allows me to doa couple of things :
+It may not look like much - partially cause I am lazy. I just took an existing building visual I had and used the `modulate` property to make it blue - but it allows me to do a couple of things :
 - Improves the "goal targeting" vs. the plain `Marker2D` I was using, using the same exact approach I wrote in my previous blog post
 - It gives the units "something" to do (attacking, for now) before achieving the "Victory" condition, instead of a boring "first unit reaching this invisible point triggers a win".
 - And a few more things, later in development
