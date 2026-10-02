@@ -1,12 +1,14 @@
 - found a way to retrieve tile info without going through TileMapLayer (TileSetSource)
 
-
-
-
-- [wip] testing using expressions to dynamically evaluate if a tutorial should be shown or not
-- notes added about tutorial data requirements
-
-- testing a 'tutorial link' concept; tutorial data class rename; more notes added about impl details
-- tutorial system > idea 1 of 2 : evaluate requirement expression when generating city, retrieving when loading city, using after map ready.
-- stragglers
-- tutorial system > idea 2 of 2 : link tutorial ids to relevant entities; when spawned, try push associated tutorial to queue. pop from queue when game changes scene
+- re enabled tutorial data
+- moved state logic from tutorial city to city
+- instantiate vs add child. turns out, instantiate works best for my use case
+- sample conquered setting
+- small cleaning up of Tutorial-related classes; retrieving tutorial data from files; opted to use the tutorial link version (still saved the requirement version for later) also discovered Godot's limitations with nested Resources when used in Inspector panel also tried the @export_tool_button (from @tool) to fix said limitation (sample not present currently)
+- gdd small fix
+- plan phase : use InstancePlaceholder instead of inline preload (packed instance) allows me to preview the changes in the editor (currently I can not) will also allow to more easily replace / edit the placeholder's properties without having to look at this script
+- tutorial data - wrong escape
+- Base State Machine - support for each state being lazy loaded, using InstancePlaceholders
+- new source link added
+- small QoLs
+- prepare phase - cache placeholder card scene for better loads
