@@ -137,12 +137,15 @@ In the interest of keeping this article somewhat "focused" *more* on the explana
 
 Before I forget : For the tooltips to work, we have to "mark" the words in our "TutorialData" steps that we want to be "highlighted" in this manner with some metadata. Otherwise they are "just words". To do that, we just need to surround our words with an "url" `BBCode` tag plus the proper metadata. So, if we have something like "sword" written out, it could become something like "[url={"term" : "weapon"}]sword[/url]. This paired with our previous script gives us the on-hover tooltip effect!
 
-(...)
+Doing everything up until this point gives us a solid base. We have a way of creating tutorials and a way of showing said tutorials. I suggest taking a break and testing it out on an existing `Scene` in the game. Something simple. Instantiating one singular tutorial on the `_ready()` handler, for example. To start, we can add an instance of this "TutorialDialog" component as a child on our `Scene` and then wiring it up with script.
 
-start talking about using this in some scene of ours
+One key distinction I'd like to point out, especially for those starting out developing with Godot (like me). Looking at the Godot Engine, we have two buttons in the `Scene` panel that *look* similar : `Add Child Node` and `Instantiate Child Scene`. Most of the times, we will be using the former since it allows us to add the base Godot node types, while the second one allows us to add other `Scene` files we have already created, so they don't usually cross paths. 
 
-mention the add child vs instantiate child issue (start at the @onready props problem)
+However there *is* a use case where both options "work": When we are creating new `Scene` as components, with their unique class name and all the usual advantages it comes with (the most common one being inheritance, in case we want to implement different "flavors" of a given component). Which is the path I took. With this, I was able to use the `Add Child Node` button to add my newly created component to the `Scene` tree and it *seemed* correct.
 
+But, once I tested it up, a few not-so-clear errors surged. All of my `@onready` properties that were accessors to child `Nodes`, such as the Label we added, were all returning `null`. This was due to the "TutorialDialog" **plus it's children** not being properly instantiated. Let this mistake serve as a lesson.
+
+With that warning out of the way, there's one last piece of the puzzle remaining. Write out the "logic" that will handle "when" a given tutorial should be shown or not.
 
 ## Setting up the Decision-Making System (with two variations)
 
