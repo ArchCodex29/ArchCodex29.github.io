@@ -179,7 +179,7 @@ Perhaps. Or perhaps it's really that simple. One of the two, surely.
 
 If you check [this section](https://docs.godotengine.org/en/stable/tutorials/ui/bbcode_in_richtextlabel.html#handling-url-tag-clicks) of the `BBCode` syntax, you will notice that Godot devs mention "advanced use cases" with inline data. Join that with the `RichTextLabel`'s `meta_hover_started` and `meta_hover_ended`, plus a new `Scene` for the tooltip itself (I duplicated the "TutorialDialog" and removed the buttons) and a place to store the information that should appear in that tooltip, and you got yourself some fancy contextual tooltips!
 
-Bellow I'll include the important snippet that makes it all work. If you've been following along, I am sure you can piece the rest together :
+Below I'll include the important snippet that makes it all work. If you've been following along, I am sure you can piece the rest together :
 
 ```
 # Pretend for a minute this comes from a file

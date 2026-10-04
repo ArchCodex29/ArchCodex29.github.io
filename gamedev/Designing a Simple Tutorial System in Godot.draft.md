@@ -1,25 +1,10 @@
 # Designing a Simple Tutorial System in Godot
 
-```
-scaffold : 
-- intro, introduce what I am building
-- one paragraph about the 'problem to solve'
-- talk about the "goal" of the system and why I am building it
-  - mostly 'cause I wanted to create one component / see what I could do
-- quick bullet list with overview
-- section about data modeling
-- section about the UI component
-- section about the trigger/queue/requirement system
-  - mention the two explored ideas
-- wiring everything up
-- demonstration plus closing thoughts
-```
-
 Greetings, fellow traveler. Do you want to create your own tutorial system for your game ? A simple, dialog-style, configurable, tutorial system ? 
 
 In this blog post, I write about developing the tutorial system from scratch in Godot (and GDScript) for my own game - NanoSwarm : Dominion. Not just the "final result", but the thought process behind each step, what worked and what didn't, and general useful tricks applicable in other scenarios.
 
-<!-- insert cover image here -->
+![cover image](TutorialSystem_Devlog_Cover.png)
 
 There are multiple ways of designing an in-game Tutorial, from dedicated tutorial levels to NPC characters that explain a given mechanic out to the player. For my game, I decided to present tutorials using a "dialog-style" UI that may show up when starting a new level or encountering a new enemy.
 
@@ -27,7 +12,9 @@ Creating one tutorial in this manner is a simple-enough matter. All it would tak
 
 So, to prevent that, let's design something that's both simple to use and flexible to support my needs (and hopefully yours). 
 
-After creating two or three different tutorials "manually" and comparing them with each other, we notice a pattern. Every tutorial can have the same **visuals**, with only the **content** being truly unique and with some common **rules** as to when they should trigger. 
+> And how are we going to do that ?
+
+Simple. After creating two or three different tutorials "manually" and comparing them with each other, we notice a pattern. Every tutorial can have the same **visuals**, with only the **content** being truly unique and with some common **rules** as to when they should trigger. 
 
 With this in mind, I decided to split the system in three components :
 - the **TutorialData** : A `Resource` that holds the data for a given Tutorial
@@ -36,30 +23,125 @@ With this in mind, I decided to split the system in three components :
 
 With this system implemented, I am able to focus on writing down different tutorials in their own `Resource` files and having them show up when I want to, without having to shuffle through all my game's files to see where I should do something or not.
 
+Here's a brief showcase :
+[![Tutorial Preview](https://img.youtube.com/vi/AdjwyIaIdo8/hqdefault.jpg)](https://youtu.be/AdjwyIaIdo8)
+
 On the following sections, I'll do my best to explain "how" I implemented each component as well as the "why" behind some core decisions. All of the components can (and should!) be customized to fit a game's specific needs. 
 
 ## Modeling a Custom Resource for Tutorial Data
 
-"TutorialData" custom resource
-core fields : id, steps array (step also extends resource; each with "text" element)
-- step (sub) resource, when declared inside the base TutorialData Resource, works just fine in code
-- however, when trying to create the base TutorialData via Inspector panel, adding a new step doesn't work via editor
-- with a standalone resource (separate file), works without issue
-- it *can* be made to work, if need be, by adding a custom button to the exported properties (and tagging the resource with @tool) that, on click, adds the correct instance to the array
-save/retrieve using ResourceSaver and ResourceLoader
-can be "managed" in a singleton (autoload, in Godot) for easy access
-mention utility dictionary to track which tutorial as been seen or not (id, bool)
+For the first element in our plan, I got the "TutorialData" - a custom `Resource` we can use to save (in a easy-to-retrieve file) the info for a given piece of knowledge we want to present to the player. You can add any property you feel it's important to it, as long as it's serializable. 
 
+> Serializable ? So, use primitive types like String or int ?
+
+Yes, as well as other custom classes you create that are *also* `Resources` (so, any class that inherits from the base "Resource" class).
+
+For my first version, I focused on having an "id" property (to quickly find a given tutorial later on) and an array of "Steps", with each one being a second `Resource` with a text property for the contents I want to display on the screen. Later on, I could extend this to add other properties like an "anchor" to tell where the text should be in the screen (in case I want each step to appear in different corners of the screen). Here's the code snippet for you to use as a base:
+
+```
+# file 'tutorial_data.gd'
+extends Resource
+class_name TutorialData
+
+@export var id: String
+@export var steps : Array[TutorialDataStep]
+
+func _init(_id: String, _steps: Array[TutorialDataStep] = []) -> void: 
+	id = _id
+	steps = _steps
+
+# file 'tutorial_data_step.gd'
+extends Resource
+class_name TutorialDataStep
+
+@export_multiline var text : String
+
+func _init(label_text: String = "") -> void:
+	text = label_text
+```
+
+Now, an important callout before moving on. In this snippet, I could have created the "TutorialDataStep" `Resource` in the same file as my "TutorialData", as a nested `Resource`. And in fact, I did at the start. However, when I was creating new tutorials in Godot's `Inspector` Panel, it was not recognizing the "TutorialDataStep" properly when I tried to add a new item to the "steps" array. Hence me extracting it to it's own file. May be a Godot quirk, or a bug that could be fixed down the line (or just my bad luck). 
+
+With this `Resource`, we can now create a sample instance of it and move along. For example, in my game I have a singleton class named "GameManager" (in Godot it's a feature named "AutoLoad") that I use to share some common info. I created one or two sample instances inside an array and used that for my tests. Once I got comfortable, I moved them to dedicated resource files (.tres) and loaded them during the "GameManager" instantiation. In case you never worked with resource loading, here's another snippet:
+
+```
+var _tutorials : Array[TutorialData] = []
+
+func _init() -> void:
+	_load_tutorials()
+
+func _load_tutorials() -> void:
+	var tutorialPath = "res://Assets/Tutorials"
+
+	for file in ResourceLoader.list_directory(tutorialPath):
+		if !file.ends_with(".tres"): continue
+
+		var resource = ResourceLoader.load(tutorialPath + "/" + file)
+
+		if resource is not TutorialData:
+			push_error("Found unknown resource in tutorial data folder")
+			continue
+		
+		var tutorialData = resource as TutorialData
+
+		_tutorials.append(tutorialData)		
+```
+
+Bonus points : If we want to keep track which tutorials were already seen or not, it's also really easy to do. One plan `Dictionary[String, bool]` to keep track of which tutorial id has been seen or not, store it in it's own file and we got it covered (from a data-perspective)
+
+> And how or when do we mark it as "seen" ?
+
+Once our soon-to-be-created Dialog component tells us to, for example. Just because it's an "UI" component, it doesn't necessarily mean it only "shows" information. Check the next section.
 
 ## Creating the Tutorial Dialog UI Component
 
-(check devlog#14)
+With the data portion of this system taken care of, we now need a way of presenting it to the player. As I eluded to before, I chose to use "dialog-style" cards to show the tutorials to the player. It's a simple way to start off that can be improved on later down the line. One good thing of separating the components like we are doing here - we can work off on one without negatively impacting the others.
+
+To start, we can create a new `Scene` for our "TutorialDialog" component. I used a `PanelContainer` as root node, coupled with `Buttons`, a `RichTextLabel` and a few `MarginContainers` (so the elements don't render too close to each other). You can add or remove elements to suit your needs. The only "mandatory" ones are the "Label" (a place to put the "step" text in) and the buttons for interaction.
+
+![Tutorial Dialog Editor View](tutorial_dialog_editor.png)
+
+> Why are we using RichTextLabel, instead of the base Label ?
+
+The `RichTextLabel` includes support for [BBCode](https://docs.godotengine.org/en/stable/tutorials/ui/bbcode_in_richtextlabel.html), a Godot syntax that allows us to style our text. We can use it to make certain words appear in *italic* or in **bold**, or with a different color altogether (example : highlight a specific *concept* in the game) and more! Just don't forget to enable it before using by selecting the node, looking at the `Inspector` panel and toggle `BBCode Enabled`.
+
+Once the visual aspect is to our liking, it's time to add some functionality to it. And there are a couple of objectives we want to achieve with this small - but important - component:
+- Be able to access one instance of our "TutorialData" `Resource`
+- Be able to show the text of one "step" at a time
+- Be able to move forward to the next step
+- Be able to close the dialog at any time
+
+> That sounds like a lot! Certainly more than a couple.
+
+Perhaps. But each individual objective is easy to implement. In fact, I'll add one more to the list:
+- Be able to hover highlighted words and see a tooltip with an explanation
+
+All we need is the correct tools (and knowledge) for the job. Which I will explain... now!
+
+- One "TutorialData" property, with it's value set *when* we want to show a specific tutorial
+- One "on_pressed" event handler on each button, to handle the "next step" or "close dialog" requests.
+- One custom signal that we emit on dialog close, for integration purposes
+- Two "on_label_meta_hover" event handlers on our label for the contextual tooltip logic
+
+> I... Will need some notes.
+
+Try to imagine the final result in use : You instance the "TutorialDialog" component and give it some data to work with. It shows you the first step's text. If you click the "dismiss" button, it ends the tutorial and closes the dialog. If you click the "next" button, it shows you the next step's text, until reaching the last step. At this point, the "next" button gives place to the "complete" button, which also ends the tutorial. At any point, if you see an highlighted keyword, you can mouse over it, triggering a "start" event that signals your dialog to show a tooltip. Once you mouse out of it, it triggers a "end" event that signals your dialog to hide the tooltip.
+
+> Okay, I can see the plan now. Please proceed.
+
+In the interest of keeping this article somewhat "focused" *more* on the explanation and *less* on the code, I will include below a stripped down version of the final script. If you - the reader! - need help in any particular section, just reach out!
+
+```
+# tutorial dialog script here
+```
+
+Before I forget : For the tooltips to work, we have to "mark" the words in our "TutorialData" steps that we want to be "highlighted" in this manner with some metadata. Otherwise they are "just words". To do that, we just need to surround our words with an "url" `BBCode` tag plus the proper metadata. So, if we have something like "sword" written out, it could become something like "[url={"term" : "weapon"}]sword[/url]. This paired with our previous script gives us the on-hover tooltip effect!
+
+(...)
+
+start talking about using this in some scene of ours
 
 mention the add child vs instantiate child issue (start at the @onready props problem)
-
-mention the difference between packed scene "instantiate" method vs. instance placeholder "create_instance" method
-- "instantiate" **does not** call the _ready method (only when adding the instance to the scene tree via add_child)
-- "create_instance" **does** call the _ready method and already adds the instance to the scene tree (no add_child needed)
 
 
 ## Setting up the Decision-Making System (with two variations)
@@ -105,3 +187,9 @@ version 2 : have each entity hold which tutorials its linked to
 
 ## The Final Result
 
+```
+- wiring everything up
+- demonstration plus closing thoughts
+```
+
+[![Tutorial Preview](https://img.youtube.com/vi/AdjwyIaIdo8/hqdefault.jpg)](https://youtu.be/AdjwyIaIdo8)
