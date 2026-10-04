@@ -103,7 +103,7 @@ To start, we can create a new `Scene` for our "TutorialDialog" component. I used
 
 > Why are we using RichTextLabel, instead of the base Label ?
 
-The `RichTextLabel` includes support for [BBCode](https://docs.godotengine.org/en/stable/tutorials/ui/bbcode_in_richtextlabel.html), a Godot syntax that allows us to style our text. We can use it to make certain words appear in *italic* or in **bold**, or with a different color altogether (example : highlight a specific *concept* in the game) and more! Just don't forget to enable it before using by selecting the node, looking at the `Inspector` panel and toggle `BBCode Enabled`.
+The `RichTextLabel` includes support for [BBCode](https://docs.godotengine.org/en/stable/tutorials/ui/bbcode_in_richtextlabel.html), a syntax that allows us to style our text. We can use it to make certain words appear in *italic* or in **bold**, or with a different color altogether (example : highlight a specific *concept* in the game) and more! Just don't forget to enable it before using by selecting the node, looking at the `Inspector` panel and toggle `BBCode Enabled`.
 
 Once the visual aspect is to our liking, it's time to add some functionality to it. And there are a couple of objectives we want to achieve with this small - but important - component:
 - Be able to access one instance of our "TutorialData" `Resource`
