@@ -23,8 +23,8 @@ With this in mind, I decided to split the system in three components :
 
 With this system implemented, I am able to focus on writing down different tutorials in their own `Resource` files and having them show up when I want to, without having to shuffle through all my game's files to see where I should do something or not.
 
-Here's a brief showcase :
-[![Tutorial Preview](https://img.youtube.com/vi/AdjwyIaIdo8/hqdefault.jpg)](https://youtu.be/AdjwyIaIdo8)
+Here's a sneak peek of the final result :
+[![Tutorial Preview](https://img.youtube.com/vi/4wo-pN52NXY/hqdefault.jpg)](https://youtu.be/4wo-pN52NXY)
 
 On the following sections, I'll do my best to explain "how" I implemented each component as well as the "why" behind some core decisions. All of the components can (and should!) be customized to fit a game's specific needs. 
 
@@ -81,10 +81,8 @@ func _load_tutorials() -> void:
 		if resource is not TutorialData:
 			push_error("Found unknown resource in tutorial data folder")
 			continue
-		
-		var tutorialData = resource as TutorialData
 
-		_tutorials.append(tutorialData)		
+		_tutorials.append(resource as TutorialData)		
 ```
 
 Bonus points : If we want to keep track which tutorials were already seen or not, it's also really easy to do. One plan `Dictionary[String, bool]` to keep track of which tutorial id has been seen or not, store it in it's own file and we got it covered (from a data-perspective)
@@ -120,7 +118,7 @@ All we need is the correct tools (and knowledge) for the job. Which I will expla
 
 - One "TutorialData" property, with it's value set *when* we want to show a specific tutorial
 - One "on_pressed" event handler on each button, to handle the "next step" or "close dialog" requests.
-- One custom signal that we emit on dialog close, for integration purposes
+- One custom signal that we emit on dialog close, for integration purposes (example : on close, mark as seen)
 - Two "on_label_meta_hover" event handlers on our label for the contextual tooltip logic
 
 > I... Will need some notes.
@@ -129,11 +127,9 @@ Try to imagine the final result in use : You instance the "TutorialDialog" compo
 
 > Okay, I can see the plan now. Please proceed.
 
-In the interest of keeping this article somewhat "focused" *more* on the explanation and *less* on the code, I will include below a stripped down version of the final script. If you - the reader! - need help in any particular section, just reach out!
+Down below I have included the base script to implement all of these behaviors. If you - the reader! - need help in any particular section, just reach out!
 
-```
-# tutorial dialog script here
-```
+![tutorial dialog script](tutorial_dialog_script.png)
 
 Before I forget : For the tooltips to work, we have to "mark" the words in our "TutorialData" steps that we want to be "highlighted" in this manner with some metadata. Otherwise they are "just words". To do that, we just need to surround our words with an "url" `BBCode` tag plus the proper metadata. So, if we have something like "sword" written out, it could become something like "[url={"term" : "weapon"}]sword[/url]. This paired with our previous script gives us the on-hover tooltip effect!
 
@@ -149,50 +145,69 @@ With that warning out of the way, there's one last piece of the puzzle remaining
 
 ## Setting up the Decision-Making System (with two variations)
 
-base idea :
-- create the multiple instances of "TutorialData"
-- when entering a level, find out which ones to show
-  - this point I had 2 ideas
-- add the "to show" tutorials on a shared (utility) array
-- at specific moments / intervals in the level, check if I have a tutorial to show
-  - mention generic use cases
-  - mention my use case : after transitioning to a new state in the city
+Now that we can create and present our tutorials in any `Scene` that we want, it would be neat to have "something" that can decide which tutorial to show and when, to stop us from having to write an individual piece of code for every tutorial we plan on having.
 
-version 1 : concentrate the logic on the TutorialData Resource
-- added new fields : requirement(string), trigger (enum)
-- goal : cycle through unseen tutorials when "needed" (my case : for a new level) > store relevant ones for later
-- on level gen : find relevant tutorials for the level context > store those > save the ids in the level savefile
-- on level load : get tutorials by id in savefile > filter by unseen ones > store those for later
-- on state transition, check if there are stored tutorials with matching trigger. show those
-- pro : more powerful; con : more "front heavy" (needs to cycle through all possible tutorials and evaluate expressions), requires to save in file for in-between loads
+Of course, this can be achieved in multiple ways, and it will vary from game to game. But that doesn't mean we can't read some ideas and learn from them. It's one of the main reasons I am writing this article, after all. You could, for example, implement something that shows tutorials after loading a new level, or perhaps create specific items in the world that, when interacted with, trigger a specific tutorial.
 
-![version 1 sample 1](tutorial_system_approach1_1.png)
-![version 1 sample 2](tutorial_system_approach1_2.png)
-![version 1 sample 3](tutorial_system_approach1_3.png)
-![version 1 sample 4](tutorial_system_approach1_4.png)
+For my game and due to it's roguelike nature, I decided I wanted something that would be able to show tutorials in possibly "any" level, depending on the elements that get picked by the game engine behind the scenes. This should allow it to present tutorials as they are needed instead of having "dedicated" tutorial levels at the beginning of the game.
 
-version 2 : have each entity hold which tutorials its linked to
-- new custom resource : TutorialLink, with property id(string)
-  - expected to contain an id of an existing tutorial
-  - bonus : new wrapper Node TutorialLinkNode, with one TutorialLink export prop, to allow to "attach" a tutorial to any scenetree in the editor
-  - explain the @tool usage
-    - explain godot's validate property
-  - explain the tutorial discovery on id set
-- explain idea : when a regular entity (with one or more links) is instanced in the scene, each instanced link tries to also find (and add to the shared array)
-- on state transition, try to pop a tutorial from the shared array and show if any. 
-  - to support daisy chain, also do the check on tutorial end 
-- pro : easy to use, once set up; con : hard to set up, less powerful with the conditions to show the tutorial
+The core of this idea is simple enough to implement and integrate with what I have already built. I am using state machines to manage the logic of a level, so I can adjust it to check for "tutorials to show" (in lack of a better expression) after transitioning to a given state, before moving forward.
 
-![version 2 sample 1](tutorial_system_approach2_1.png)
-![version 2 sample 2](tutorial_system_approach2_2.png)
+As to which tutorials, however, I ended up having *two* ideas as to how I could do it. Variations of the main idea, to be more precise. So... I decided to implement both and see which one suited my needs best. I will briefly describe them on the following paragraphs so you can read and choose which suits *your* needs best. Or discard both altogether and come up with a better version for *your* game, that's more than fair.
+
+### Expression-based rules for Tutorials
+
+For the first idea, the goal is to have each level contain a list of "tutorials" (the ids suffice) that should be shown, when played. To do that, when the level was being generated, we could cycle through each (not seen) tutorial and evaluate a given "rule" to see if it should be included or not, based on what the level generator included in that particular level. Later on, when loading an already-generated level, all we have to do is check the previously-created tutorial list and we're good.
+
+To aid in implementing this, we could use Godot's [Expressions](https://docs.godotengine.org/en/stable/tutorials/scripting/evaluating_expressions.html) which, as the name implies, allows us to dynamically evaluate in runtime an expression stored in a string. By extending our "TutorialData" `Resource` to have one more property, this can then be easily retrievable and used to see if we want to show a given tutorial or not.
+
+> And what type of rules can we create with this ?
+
+It can range from simple comparison expressions to more complex ones that use data or existing methods in a given class to perform theoretically any validation we want. But I should warn (and the documentation does too) : If the expressions can be manipulated by the player (or a malicious third party), it could be used to do tamper with your game. So, **if** you choose to use this approach, use it wisely.
+
+Here is the main function for the whole idea : For a given context object, evaluate all tutorials' rules against it and return those that pass the test. The remaining bits are *very* project-specific, so I'll leave those to you!
+
+![version 1 sample](tutorial_system_approach1.png)
+
+To me, this idea is the more "powerful" one, since we can write almost "any" rule we want for a given tutorial to trigger or not, but it does require us to evaluate *every* rule at runtime when generating a new level, and to store it's result to persist between loads - especially important in my game, since I may want to show a tutorial when a player reaches a particular "state" in a level, and he saves and quits before that.
+
+### Attachable Tutorial Link to Entities
+
+For this second idea, the goal is to have each entity in our game "tell" us if it has a tutorial associated or not. From an entire level, to different types of enemies, to items in the world. A "link" to a tutorial. Then, when these entities get instanced, we can have these "links" to try and add their associated tutorial to a shared list of "queued tutorials" for us to show.
+
+It probably sounds harder than it actually is. We can have our "queued tutorials" be an array somewhere we can already easily access in our game - in my case, it is the "GameManager" singleton. We can then check this list in the same moments as we would do, with the previous idea - in my case, after my level finishes a state transition. 
+
+> And for actually adding the tutorials in said list ? The "link" magically places them there ?
+
+In a sense, yes. If we replace "magically places them" with "on instantiation, it tries to access the shared list and append a value", it's pretty much the same thing.
+
+By representing this "link "I mentioned as it's own `Resource` (named "TutorialLink"), that then can be used as a property of any other entity we choose to, we can then attach any logic we want to it. And I want a few things:
+- An "id" property to hold the respective tutorial id
+- When it's instanced at runtime, it accesses the "GameManager" and pushes it's "id" value to the shared tutorial list
+- When I am managing my data (in the Godot's `Inspector` panel), I want to "pick" an existing id instead of typing it out
+
+And to do all that, we could write something like this :
+
+![Tutorial Link script](tutorial_link_script.png)
+
+Notice the usage of [`@tool`](https://docs.godotengine.org/en/stable/tutorials/plugins/running_code_in_the_editor.html#how-to-use-tool) and the `Engine.is_editor_hint()` method. This allows us to only run the whole "add this value to this list" when the game is running, not when we are editing values in the Editor. I also extend the class property itself with [`_validate_property`](https://docs.godotengine.org/en/stable/classes/class_object.html#class-object-private-method-validate-property), allowing me to tell the Editor that the "id" property uses a finite list of values - retrieved from listing files in a folder, but this could be any logic you it to be.
+
+To test out this custom `Resource`, I modified an existing class I had in my game to represent an enemy Turret. When editing the values in the `Inspector`, it looks like this (including the id dropdown picker and all): 
+
 ![version 2 sample 3](resource_exported_prop_dynamiclist_inspector.png)
-![version 2 sample 4](resource_exported_prop_dynamiclist_script.png)
+
+This approach takes a bit more knowledge to set up, but once we, using it in the project itself is easy and intuitive. I even created a `Node` wrapper around the "TutorialLink" (as in : a custom `Node` with one property - the link) so I could attach it as a child `Node` of anything I wanted in my `Scene` tree. It is also more restrictive in the conditions for a tutorial to "show up", when compared to the first approach. 
+
+> Both look interesting! Which one should I choose ? 
+
+Like I wrote above, I believe you - the reader - should choose the approach that best fits the project. Or, learn the qualities and tricks of both and create your own. As for which one *I* chose, I decided to use the attachable "TutorialLink" approach, while keeping the other approach in my notes just in case I end up needing to support some complex use cases.
 
 ## The Final Result
 
-```
-- wiring everything up
-- demonstration plus closing thoughts
-```
+If all goes well, connecting all the pieces gives us one simple to use, yet flexible, system to present all sorts of tutorials to our players! Here's another look at the final result, showing tutorials being dismissed, followed along, and highlighted keywords with their own tooltips!
 
 [![Tutorial Preview](https://img.youtube.com/vi/AdjwyIaIdo8/hqdefault.jpg)](https://youtu.be/AdjwyIaIdo8)
+
+Hope this blog post was helpful in any way.  
+Got a question or just wanna discuss something? Feel free to reach out!  
+And thank you for reading!
