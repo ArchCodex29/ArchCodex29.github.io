@@ -38,52 +38,13 @@ Yes, as well as other custom classes you create that are *also* `Resources` (so,
 
 For my first version, I focused on having an "id" property (to quickly find a given tutorial later on) and an array of "Steps", with each one being a second `Resource` with a text property for the contents I want to display on the screen. Later on, I could extend this to add other properties like an "anchor" to tell where the text should be in the screen (in case I want each step to appear in different corners of the screen). Here's the code snippet for you to use as a base:
 
-```
-# file 'tutorial_data.gd'
-extends Resource
-class_name TutorialData
-
-@export var id: String
-@export var steps : Array[TutorialDataStep]
-
-func _init(_id: String, _steps: Array[TutorialDataStep] = []) -> void: 
-	id = _id
-	steps = _steps
-
-# file 'tutorial_data_step.gd'
-extends Resource
-class_name TutorialDataStep
-
-@export_multiline var text : String
-
-func _init(label_text: String = "") -> void:
-	text = label_text
-```
+![tutorial data sample](tutorial_data_script.png)
 
 Now, an important callout before moving on. In this snippet, I could have created the "TutorialDataStep" `Resource` in the same file as my "TutorialData", as a nested `Resource`. And in fact, I did at the start. However, when I was creating new tutorials in Godot's `Inspector` Panel, it was not recognizing the "TutorialDataStep" properly when I tried to add a new item to the "steps" array. Hence me extracting it to it's own file. May be a Godot quirk, or a bug that could be fixed down the line (or just my bad luck). 
 
 With this `Resource`, we can now create a sample instance of it and move along. For example, in my game I have a singleton class named "GameManager" (in Godot it's a feature named "AutoLoad") that I use to share some common info. I created one or two sample instances inside an array and used that for my tests. Once I got comfortable, I moved them to dedicated resource files (.tres) and loaded them during the "GameManager" instantiation. In case you never worked with resource loading, here's another snippet:
 
-```
-var _tutorials : Array[TutorialData] = []
-
-func _init() -> void:
-	_load_tutorials()
-
-func _load_tutorials() -> void:
-	var tutorialPath = "res://Assets/Tutorials"
-
-	for file in ResourceLoader.list_directory(tutorialPath):
-		if !file.ends_with(".tres"): continue
-
-		var resource = ResourceLoader.load(tutorialPath + "/" + file)
-
-		if resource is not TutorialData:
-			push_error("Found unknown resource in tutorial data folder")
-			continue
-
-		_tutorials.append(resource as TutorialData)		
-```
+![load tutorials sample](load_tutorials_sample.png)
 
 Bonus points : If we want to keep track which tutorials were already seen or not, it's also really easy to do. One plan `Dictionary[String, bool]` to keep track of which tutorial id has been seen or not, store it in it's own file and we got it covered (from a data-perspective)
 
