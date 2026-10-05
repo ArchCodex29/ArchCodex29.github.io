@@ -24,6 +24,7 @@ With this in mind, I decided to split the system in three components :
 With this system implemented, I am able to focus on writing down different tutorials in their own `Resource` files and having them show up when I want to, without having to shuffle through all my game's files to see where I should do something or not.
 
 Here's a sneak peek of the final result :
+
 [![Tutorial Preview](https://img.youtube.com/vi/4wo-pN52NXY/hqdefault.jpg)](https://youtu.be/4wo-pN52NXY)
 
 On the following sections, I'll do my best to explain "how" I implemented each component as well as the "why" behind some core decisions. All of the components can (and should!) be customized to fit a game's specific needs. 
@@ -46,7 +47,7 @@ With this `Resource`, we can now create a sample instance of it and move along. 
 
 ![load tutorials sample](load_tutorials_sample.png)
 
-Bonus points : If we want to keep track which tutorials were already seen or not, it's also really easy to do. One plan `Dictionary[String, bool]` to keep track of which tutorial id has been seen or not, store it in it's own file and we got it covered (from a data-perspective)
+Bonus points : If we want to keep track which tutorials were already seen or not, it's also really easy to do. One plain `Dictionary[String, bool]` to keep track of which tutorial id has been seen or not, store it in it's own file and we got it covered (from a data-perspective)
 
 > And how or when do we mark it as "seen" ?
 
