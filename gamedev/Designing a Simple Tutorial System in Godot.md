@@ -89,7 +89,7 @@ Try to imagine the final result in use : You instance the "TutorialDialog" compo
 
 > Okay, I can see the plan now. Please proceed.
 
-Down below I have included the base script to implement all of these behaviors. If you - the reader! - need help in any particular section, just reach out!
+Very well! Down below I have included the base script to implement all of these behaviors. If you - the reader! - need help in any particular section, just reach out!
 
 ![tutorial dialog script](tutorial_dialog_script.png)
 
