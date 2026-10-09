@@ -24,7 +24,7 @@ Still in early stages, but it already allows me to click on a "icon" placed in a
 
 > So it will be like a "Slay the Spire" map ?
 
-Not really. **Slay the Spire** generates a selection of events and connects them, letting the player which path to take. For my game, I want to allow the player to choose "any" level (within reason) as well as go back to previous Cities to manage them. I also want to allow the player to manage the collected Triggers and Actions (the same way you can "look" at cards in **Slay the Spire**), spend Resources to craft or unlock new stuff, and a few other things.  
+Not really. **Slay the Spire** generates a selection of events and connects them, letting the player pick which path to take. For my game, I want to allow the player to choose "any" level (within reason) as well as go back to previous Cities to manage them. I also want to allow the player to manage the collected Triggers and Actions (the same way you can "look" at cards in **Slay the Spire**), spend Resources to craft or unlock new stuff, and a few other things.  
 
 Most of these *will not* be in the first version. I want to focus on having a working, navigable, overworld map first. Then I will increment all these features one-by-one.
 
