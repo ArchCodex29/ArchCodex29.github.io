@@ -14,7 +14,7 @@ The first one was the ability to dynamically add little "City PoI" (Point of Int
 
 It looks something like this :
 
-![overworld sample](overworld_map_sample.png)
+![OverWorld Sample](overworld_map_sample.png)
 
 > Care to give a quick refresher ? 
 
