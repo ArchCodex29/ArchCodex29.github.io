@@ -25,7 +25,7 @@ With this system implemented, I am able to focus on writing down different tutor
 
 Here's a sneak peek of the final result :
 
-[![Tutorial Preview](https://img.youtube.com/vi/4wo-pN52NXY/hqdefault.jpg)](https://youtu.be/4wo-pN52NXY)
+{{< youtube 4wo-pN52NXY >}}
 
 On the following sections, I'll do my best to explain "how" I implemented each component as well as the "why" behind some core decisions. All of the components can (and should!) be customized to fit a game's specific needs. 
 
@@ -170,7 +170,7 @@ Like I wrote above, I believe you - the reader - should choose the approach that
 
 If all goes well, connecting all the pieces gives us one simple to use, yet flexible, system to present all sorts of tutorials to our players! Here's another look at the final result, showing tutorials being dismissed, followed along, and highlighted keywords with their own tooltips!
 
-[![Tutorial Preview](https://img.youtube.com/vi/AdjwyIaIdo8/hqdefault.jpg)](https://youtu.be/AdjwyIaIdo8)
+{{< youtube AdjwyIaIdo8 >}}
 
 Hope this blog post was helpful in any way.  
 Got a question or just wanna discuss something? Feel free to reach out!  

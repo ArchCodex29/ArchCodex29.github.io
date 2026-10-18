@@ -1,0 +1,156 @@
+/* Github Gist - Dark mode  */
+/* check : https://github.com/lonekorean/gist-syntax-themes/tree/master/stylesheets */
+body.colorscheme-dark .gist .highlight {
+    background: #141414;
+}
+body.colorscheme-dark .gist .blob-num,
+body.colorscheme-dark .gist .blob-code-inner,
+body.colorscheme-dark .gist .highlight,
+body.colorscheme-dark .gist .pl-enm,
+body.colorscheme-dark .gist .pl-ko,
+body.colorscheme-dark .gist .pl-mo,
+body.colorscheme-dark .gist .pl-mp1 .pl-sf,
+body.colorscheme-dark .gist .pl-ms,
+body.colorscheme-dark .gist .pl-pdc1,
+body.colorscheme-dark .gist .pl-scp,
+body.colorscheme-dark .gist .pl-smc,
+body.colorscheme-dark .gist .pl-som,
+body.colorscheme-dark .gist .pl-va,
+body.colorscheme-dark .gist .pl-vpf,
+body.colorscheme-dark .gist .pl-vpu,
+body.colorscheme-dark .gist .pl-mdr {
+     color: #aab1bf;
+}
+body.colorscheme-dark .gist .pl-mb,
+body.colorscheme-dark .gist .pl-pdb {
+     font-weight: 700;
+}
+body.colorscheme-dark .gist .pl-c,
+body.colorscheme-dark .gist .pl-c span,
+body.colorscheme-dark .gist .pl-pdc {
+     color: #5b6270;
+     font-style: italic;
+}
+body.colorscheme-dark .gist .pl-sr .pl-cce {
+     color: #56b5c2;
+     font-weight: 400;
+}
+body.colorscheme-dark .gist .pl-ef,
+body.colorscheme-dark .gist .pl-en,
+body.colorscheme-dark .gist .pl-enf,
+body.colorscheme-dark .gist .pl-eoai,
+body.colorscheme-dark .gist .pl-kos,
+body.colorscheme-dark .gist .pl-mh .pl-pdh,
+body.colorscheme-dark .gist .pl-mr {
+     color: #61afef;
+}
+body.colorscheme-dark .gist .pl-ens,
+body.colorscheme-dark .gist .pl-vi {
+     color: #be5046;
+}
+body.colorscheme-dark .gist .pl-enti,
+body.colorscheme-dark .gist .pl-mai .pl-sf,
+body.colorscheme-dark .gist .pl-ml,
+body.colorscheme-dark .gist .pl-sf,
+body.colorscheme-dark .gist .pl-sr,
+body.colorscheme-dark .gist .pl-sr .pl-sra,
+body.colorscheme-dark .gist .pl-src,
+body.colorscheme-dark .gist .pl-st,
+body.colorscheme-dark .gist .pl-vo {
+     color: #56b5c2;
+}
+body.colorscheme-dark .gist .pl-eoi,
+body.colorscheme-dark .gist .pl-mri,
+body.colorscheme-dark .gist .pl-pds,
+body.colorscheme-dark .gist .pl-pse .pl-s1,
+body.colorscheme-dark .gist .pl-s,
+body.colorscheme-dark .gist .pl-s1 {
+     color: #97c279;
+}
+body.colorscheme-dark .gist .pl-k,
+body.colorscheme-dark .gist .pl-kolp,
+body.colorscheme-dark .gist .pl-mc,
+body.colorscheme-dark .gist .pl-pde {
+     color: #c578dd;
+}
+body.colorscheme-dark .gist .pl-mi,
+body.colorscheme-dark .gist .pl-pdi {
+     color: #c578dd;
+     font-style: italic;
+}
+body.colorscheme-dark .gist .pl-mp,
+body.colorscheme-dark .gist .pl-stp {
+     color: #818896;
+}
+body.colorscheme-dark .gist .pl-mdh,
+body.colorscheme-dark .gist .pl-mdi,
+body.colorscheme-dark .gist .pl-mdr {
+     font-weight: 400;
+}
+body.colorscheme-dark .gist .pl-mdht,
+body.colorscheme-dark .gist .pl-mi1 {
+     color: #97c279;
+     background: #020;
+}
+body.colorscheme-dark .gist .pl-md,
+body.colorscheme-dark .gist .pl-mdhf {
+     color: #df6b75;
+     background: #200;
+}
+body.colorscheme-dark .gist .pl-corl {
+     color: #df6b75;
+     text-decoration: underline;
+}
+body.colorscheme-dark .gist .pl-ib {
+     background: #df6b75;
+}
+body.colorscheme-dark .gist .pl-ii {
+     background: #e0c184;
+     color: #fff;
+}
+body.colorscheme-dark .gist .pl-iu {
+     background: #e05151;
+}
+body.colorscheme-dark .gist .pl-ms1 {
+     color: #aab1bf;
+     background: #373b41;
+}
+body.colorscheme-dark .gist .pl-c1,
+body.colorscheme-dark .gist .pl-cn,
+body.colorscheme-dark .gist .pl-e,
+body.colorscheme-dark .gist .pl-eoa,
+body.colorscheme-dark .gist .pl-eoac,
+body.colorscheme-dark .gist .pl-eoac .pl-pde,
+body.colorscheme-dark .gist .pl-kou,
+body.colorscheme-dark .gist .pl-mm,
+body.colorscheme-dark .gist .pl-mp .pl-s3,
+body.colorscheme-dark .gist .pl-mq,
+body.colorscheme-dark .gist .pl-s3,
+body.colorscheme-dark .gist .pl-sok,
+body.colorscheme-dark .gist .pl-sv,
+body.colorscheme-dark .gist .pl-mb {
+     color: #d19965;
+}
+body.colorscheme-dark .gist .pl-enc,
+body.colorscheme-dark .gist .pl-entc,
+body.colorscheme-dark .gist .pl-pse .pl-s2,
+body.colorscheme-dark .gist .pl-s2,
+body.colorscheme-dark .gist .pl-sc,
+body.colorscheme-dark .gist .pl-smp,
+body.colorscheme-dark .gist .pl-sr .pl-sre,
+body.colorscheme-dark .gist .pl-stj,
+body.colorscheme-dark .gist .pl-v,
+body.colorscheme-dark .gist .pl-pdb {
+     color: #e4bf7a;
+}
+body.colorscheme-dark .gist .pl-ent,
+body.colorscheme-dark .gist .pl-entl,
+body.colorscheme-dark .gist .pl-entm,
+body.colorscheme-dark .gist .pl-mh,
+body.colorscheme-dark .gist .pl-pdv,
+body.colorscheme-dark .gist .pl-smi,
+body.colorscheme-dark .gist .pl-sol,
+body.colorscheme-dark .gist .pl-mdh,
+body.colorscheme-dark .gist .pl-mdi {
+     color: #df6b75;
+}

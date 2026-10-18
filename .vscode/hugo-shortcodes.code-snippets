@@ -1,0 +1,26 @@
+{
+	"Github Gist": {
+		"scope": "markdown",
+		"prefix": "hg-gist",
+		"body": [
+			"{{< gist user=\"${1:nickname}\" id=\"${2:idgist}\" >}}"
+		],
+		"description": "Insert a Hugo shortcode for a Github Gist"
+	},
+	"Github Gist - Specific File": {
+		"scope": "markdown",
+		"prefix": "hg-gist-file",
+		"body": [
+			"{{< gist user=\"${1:nickname}\" id=\"${2:idgist}\" file=\"${3:filename}\" >}}"
+		],
+		"description": "Insert a Hugo shortcode for a specific file of a Github Gist"
+	},
+	"Youtube Video": {
+		"scope": "markdown",
+		"prefix": "hg-youtube",
+		"body": [
+			"[![${1:Some-title-here}](https://img.youtube.com/vi/${2:youtube-video-id-here}/hqdefault.jpg)](https://youtu.be/${2:youtube-video-id-here})"
+		],
+		"description": "Insert Hugo shortcode for a YouTube video"
+	}
+}
