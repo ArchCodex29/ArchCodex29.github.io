@@ -1,0 +1,24 @@
+{{- $user := .Get "user" -}}
+{{- $id := .Get "id" -}}
+{{- $file := .Get "file" -}}
+{{- if not $user -}}
+  {{- errorf "gist shortcode requires a user parameter" -}}
+{{- else if or (gt (len $user) 39) (not (findRE "^[A-Za-z0-9]+(-[A-Za-z0-9]+)*$" $user)) -}}
+  {{- errorf "gist shortcode user must be a valid GitHub username: %q" $user -}}
+{{- end -}}
+{{- if not $id -}}
+  {{- errorf "gist shortcode requires an id parameter" -}}
+{{- else if not (findRE "^[0-9a-fA-F]{32}$" $id) -}}
+  {{- errorf "gist shortcode id must be exactly 32 hexadecimal characters: %q" $id -}}
+{{- end -}}
+{{- $gistURL := printf "https://gist.github.com/%s/%s" $user $id -}}
+{{- $embedURL := printf "%s.js" $gistURL -}}
+{{- if $file -}}
+  {{- $fileQuery := urlquery $file -}}
+  {{- $gistURL = printf "%s?file=%s" $gistURL $fileQuery -}}
+  {{- $embedURL = printf "%s?file=%s" $embedURL $fileQuery -}}
+{{- end -}}
+<div class="gist-embed">
+  <script src="{{ $embedURL }}"></script>
+  <p><a href="{{ $gistURL }}">View this Gist on GitHub</a></p>
+</div>

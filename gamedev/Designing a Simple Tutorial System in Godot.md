@@ -39,13 +39,15 @@ Yes, as well as other custom classes you create that are *also* `Resources` (so,
 
 For my first version, I focused on having an "id" property (to quickly find a given tutorial later on) and an array of "Steps", with each one being a second `Resource` with a text property for the contents I want to display on the screen. Later on, I could extend this to add other properties like an "anchor" to tell where the text should be in the screen (in case I want each step to appear in different corners of the screen). Here's the code snippet for you to use as a base:
 
-![tutorial data sample](tutorial_data_script.png)
+{{< gist user="ArchCodex29" id="f380c45bfd611e678725c813fbb1933a" file="tutorial_data.gd" >}}
+
+{{< gist user="ArchCodex29" id="f380c45bfd611e678725c813fbb1933a" file="tutorial_data_step.gd" >}}
 
 Now, an important callout before moving on. In this snippet, I could have created the "TutorialDataStep" `Resource` in the same file as my "TutorialData", as a nested `Resource`. And in fact, I did at the start. However, when I was creating new tutorials in Godot's `Inspector` Panel, it was not recognizing the "TutorialDataStep" properly when I tried to add a new item to the "steps" array. Hence me extracting it to it's own file. May be a Godot quirk, or a bug that could be fixed down the line (or just my bad luck). 
 
 With this `Resource`, we can now create a sample instance of it and move along. For example, in my game I have a singleton class named "GameManager" (in Godot it's a feature named "AutoLoad") that I use to share some common info. I created one or two sample instances inside an array and used that for my tests. Once I got comfortable, I moved them to dedicated resource files (.tres) and loaded them during the "GameManager" instantiation. In case you never worked with resource loading, here's another snippet:
 
-![load tutorials sample](load_tutorials_sample.png)
+{{< gist user="ArchCodex29" id="f380c45bfd611e678725c813fbb1933a" file="load_tutorials.gd" >}}
 
 Bonus points : If we want to keep track which tutorials were already seen or not, it's also really easy to do. One plain `Dictionary[String, bool]` to keep track of which tutorial id has been seen or not, store it in it's own file and we got it covered (from a data-perspective)
 
@@ -91,7 +93,7 @@ Try to imagine the final result in use : You instance the "TutorialDialog" compo
 
 Very well! Down below I have included the base script to implement all of these behaviors. If you - the reader! - need help in any particular section, just reach out!
 
-![tutorial dialog script](tutorial_dialog_script.png)
+{{< gist user="ArchCodex29" id="f380c45bfd611e678725c813fbb1933a" file="tutorial_dialog.gd" >}}
 
 Before I forget : For the tooltips to work, we have to "mark" the words in our "TutorialData" steps that we want to be "highlighted" in this manner with some metadata. Otherwise they are "just words". To do that, we just need to surround our words with an "url" `BBCode` tag plus the proper metadata. So, if we have something like "sword" written out, it could become something like "[url={"term" : "weapon"}]sword[/url]. This paired with our previous script gives us the on-hover tooltip effect!
 
@@ -129,7 +131,7 @@ It can range from simple comparison expressions to more complex ones that use da
 
 Here is the main function for the whole idea : For a given context object, evaluate all tutorials' rules against it and return those that pass the test. The remaining bits are *very* project-specific, so I'll leave those to you!
 
-![version 1 sample](tutorial_system_approach1.png)
+{{< gist user="ArchCodex29" id="f380c45bfd611e678725c813fbb1933a" file="tutorials_expression.gd" >}}
 
 To me, this idea is the more "powerful" one, since we can write almost "any" rule we want for a given tutorial to trigger or not, but it does require us to evaluate *every* rule at runtime when generating a new level, and to store it's result to persist between loads - especially important in my game, since I may want to show a tutorial when a player reaches a particular "state" in a level, and he saves and quits before that.
 
@@ -150,7 +152,7 @@ By representing this "link "I mentioned as it's own `Resource` (named "TutorialL
 
 And to do all that, we could write something like this :
 
-![Tutorial Link script](tutorial_link_script.png)
+{{< gist user="ArchCodex29" id="f380c45bfd611e678725c813fbb1933a" file="tutorial_link.gd" >}}
 
 Notice the usage of [`@tool`](https://docs.godotengine.org/en/stable/tutorials/plugins/running_code_in_the_editor.html#how-to-use-tool) and the `Engine.is_editor_hint()` method. This allows us to only run the whole "add this value to this list" when the game is running, not when we are editing values in the Editor. I also extend the class property itself with [`_validate_property`](https://docs.godotengine.org/en/stable/classes/class_object.html#class-object-private-method-validate-property), allowing me to tell the Editor that the "id" property uses a finite list of values - retrieved from listing files in a folder, but this could be any logic you it to be.
 
