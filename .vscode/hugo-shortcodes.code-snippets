@@ -19,7 +19,7 @@
 		"scope": "markdown",
 		"prefix": "hg-youtube",
 		"body": [
-			"[![${1:Some-title-here}](https://img.youtube.com/vi/${2:youtube-video-id-here}/hqdefault.jpg)](https://youtu.be/${2:youtube-video-id-here})"
+			"{{< youtube ${1:youtube-video-id-here} >}}"
 		],
 		"description": "Insert Hugo shortcode for a YouTube video"
 	}
