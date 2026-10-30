@@ -1,6 +1,6 @@
 # Creating Fog-of-War on Hex OverWorld in Godot
 
-Greetings, fellow traveler. Thinking on how you could add fog-of-war to your own game ? Something to make the player think which way top explore first ? 
+Greetings, fellow traveler. Thinking on how you could add fog-of-war to your own game ? Something to make the player think which way to explore first ? 
 
 ![cover image](Devlog20_cover.png)
 
@@ -8,13 +8,13 @@ Then welcome in! In this week's blog post I write about the concept of fog-of-wa
 
 ## This week's highlights
 
-At the start of this week, my game's OverWorld map looking something like this :
+At the start of this week, my game's OverWorld map looked something like this :
 
 ![no fog of war](overworld_no_fog.png)
 
 A simple map, with three interactive icons to enter in the respective City Level. And yes, I changed the ground tiles and tinted the icons since last week, for readability reasons.
 
-With this as a starting point, my goal for this week was to implement a basic "fog-of-war" system. Nothing out of ordinary, just some dark-ish clouds (which I didn't have, so I used `modulate` to change the color of some ground tiles.) that can be placed in some tiles to hide parts of the map.
+With this as a starting point, my goal for this week was to implement a basic "fog-of-war" system. Nothing out of the ordinary, just some dark-ish clouds (which I didn't have, so I used `modulate` to change the color of some ground tiles.) that can be placed in some tiles to hide parts of the map.
 
 Probably the first question is...
 
