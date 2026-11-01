@@ -1,0 +1,317 @@
+name: Gist CRUD - Proof of Concept
+
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: "Operation to perform"
+        required: true
+        type: choice
+        options:
+          - create
+          - read
+          - update
+          - delete
+
+      gist_id:
+        description: "Existing Gist ID (required for read, update and delete)"
+        required: false
+        type: string
+
+      visibility:
+        description: "Visibility for new Gists"
+        required: true
+        type: choice
+        default: secret
+        options:
+          - secret
+          - public
+
+      confirm_delete:
+        description: "Confirm Gist deletion"
+        required: true
+        type: choice
+        default: "no"
+        options:
+          - "no"
+          - "yes"
+
+jobs:
+  gist-crud:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    env:
+      GIST_TOKEN: ${{ secrets.GIST_TOKEN }}
+      OPERATION: ${{ inputs.operation }}
+      GIST_ID: ${{ inputs.gist_id }}
+      VISIBILITY: ${{ inputs.visibility }}
+      CONFIRM_DELETE: ${{ inputs.confirm_delete }}
+      SOURCE_DIR: test-gist-folder
+      GIST_DESCRIPTION: "Gist CRUD PoC - test-gist-folder"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate inputs and prepare files
+        id: prepare
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ -z "$GIST_TOKEN" ]]; then
+            echo "::error::GIST_TOKEN secret is missing."
+            exit 1
+          fi
+
+          if [[ ! -d "$SOURCE_DIR" ]]; then
+            echo "::error::Source directory not found: $SOURCE_DIR"
+            exit 1
+          fi
+
+          case "$OPERATION" in
+            create)
+              ;;
+            read|update|delete)
+              if [[ -z "$GIST_ID" ]]; then
+                echo "::error::Gist ID is required for $OPERATION."
+                exit 1
+              fi
+              ;;
+            *)
+              echo "::error::Invalid operation."
+              exit 1
+              ;;
+          esac
+
+          if [[ "$OPERATION" == "delete" && "$CONFIRM_DELETE" != "yes" ]]; then
+            echo "::error::Deletion not confirmed."
+            exit 1
+          fi
+
+          if [[ "$OPERATION" == "create" || "$OPERATION" == "update" ]]; then
+            count=0
+            declare -A seen=()
+
+            while IFS= read -r -d '' file; do
+              filename="${file#"$SOURCE_DIR"/}"
+
+              # Gists don't provide directory structures.
+              # Reject nested paths rather than silently flattening them.
+              if [[ "$filename" == */* ]]; then
+                echo "::error::Nested files are not supported: $filename"
+                exit 1
+              fi
+
+              if [[ -n "${seen[$filename]+x}" ]]; then
+                echo "::error::Duplicate filename: $filename"
+                exit 1
+              fi
+
+              seen["$filename"]=1
+              count=$((count + 1))
+            done < <(find "$SOURCE_DIR" -type f -print0)
+
+            if [[ "$count" -eq 0 ]]; then
+              echo "::error::No files found in $SOURCE_DIR"
+              exit 1
+            fi
+
+            echo "Found $count source files."
+          fi
+
+      - name: Execute Gist operation
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          API="https://api.github.com/gists"
+
+          api_request() {
+            local method="$1"
+            local endpoint="$2"
+            local data="${3:-}"
+
+            local args=(
+              -sS
+              --fail-with-body
+              -X "$method"
+              -H "Authorization: Bearer $GIST_TOKEN"
+              -H "Accept: application/vnd.github+json"
+              -H "X-GitHub-Api-Version: 2022-11-28"
+            )
+
+            if [[ -n "$data" ]]; then
+              args+=(
+                -H "Content-Type: application/json"
+                -d "$data"
+              )
+            fi
+
+            curl "${args[@]}" "$API$endpoint"
+          }
+
+          # Build a JSON payload from the local files.
+          build_payload() {
+            local payload
+            payload=$(jq -n \
+              --arg description "$GIST_DESCRIPTION" \
+              --argjson public "$([[ "$VISIBILITY" == "public" ]] && echo true || echo false)" \
+              '{description: $description, public: $public, files: {}}')
+
+            while IFS= read -r -d '' file; do
+              local filename="${file#"$SOURCE_DIR"/}"
+
+              payload=$(jq \
+                --arg filename "$filename" \
+                --rawfile content "$file" \
+                '.files[$filename] = {content: $content}' \
+                <<< "$payload")
+            done < <(find "$SOURCE_DIR" -maxdepth 1 -type f -print0)
+
+            echo "$payload"
+          }
+
+          case "$OPERATION" in
+
+            create)
+              echo "Creating a new Gist..."
+
+              payload=$(build_payload)
+              response=$(api_request POST "" "$payload")
+
+              id=$(jq -r '.id' <<< "$response")
+              url=$(jq -r '.html_url' <<< "$response")
+
+              echo "Gist created: $url"
+
+              {
+                echo "## Gist created"
+                echo ""
+                echo "- **ID:** \`$id\`"
+                echo "- **URL:** $url"
+                echo "- **Visibility:** $VISIBILITY"
+                echo ""
+                echo "Use this ID for subsequent operations."
+              } >> "$GITHUB_STEP_SUMMARY"
+
+              echo "GIST_ID=$id" >> "$GITHUB_OUTPUT"
+              ;;
+
+            read)
+              echo "Reading Gist $GIST_ID..."
+
+              response=$(api_request GET "/$GIST_ID")
+
+              echo "Description: $(jq -r '.description' <<< "$response")"
+              echo "URL: $(jq -r '.html_url' <<< "$response")"
+
+              {
+                echo "## Gist contents"
+                echo ""
+                echo "- **ID:** $GIST_ID"
+                echo "- **URL:** $(jq -r '.html_url' <<< "$response")"
+                echo "- **Public:** $(jq -r '.public' <<< "$response")"
+                echo ""
+                echo "### Files"
+                echo ""
+              } >> "$GITHUB_STEP_SUMMARY"
+
+              while IFS= read -r filename; do
+                echo "- \`$filename\`" >> "$GITHUB_STEP_SUMMARY"
+
+                echo ""
+                echo "===== $filename ====="
+                jq -r --arg f "$filename" '.files[$f].content // "[Content unavailable or truncated]"' <<< "$response"
+                echo "======================"
+
+              done < <(jq -r '.files | keys[]' <<< "$response")
+              ;;
+
+            update)
+              echo "Synchronizing Gist $GIST_ID..."
+
+              # Retrieve the current remote state.
+              remote=$(api_request GET "/$GIST_ID")
+
+              # Build the desired local state.
+              payload=$(build_payload)
+
+              # Preserve the existing description and visibility.
+              payload=$(jq \
+                --arg description "$(jq -r '.description // ""' <<< "$remote")" \
+                --argjson public "$(jq '.public' <<< "$remote")" \
+                '.description = $description | .public = $public' \
+                <<< "$payload")
+
+              # Mark remote files missing locally for deletion.
+              while IFS= read -r filename; do
+                if ! jq -e --arg f "$filename" '.files | has($f)' <<< "$payload" > /dev/null; then
+                  echo "Removing remote file: $filename"
+
+                  payload=$(jq \
+                    --arg filename "$filename" \
+                    '.files[$filename] = null' \
+                    <<< "$payload")
+                fi
+              done < <(jq -r '.files | keys[]' <<< "$remote")
+
+              # Avoid unnecessary API updates.
+              changed=false
+
+              while IFS= read -r filename; do
+                local_content=$(jq -r --arg f "$filename" '.files[$f].content' <<< "$payload")
+                remote_content=$(jq -r --arg f "$filename" '.files[$f].content // ""' <<< "$remote")
+
+                if [[ "$local_content" != "$remote_content" ]]; then
+                  changed=true
+                  echo "Changed or added: $filename"
+                fi
+              done < <(jq -r '.files | to_entries[] | select(.value != null) | .key' <<< "$payload")
+
+              while IFS= read -r filename; do
+                if ! jq -e --arg f "$filename" '.files | has($f)' <<< "$payload" > /dev/null; then
+                  changed=true
+                fi
+              done < <(jq -r '.files | keys[]' <<< "$remote")
+
+              if [[ "$changed" == false ]]; then
+                echo "No changes detected. Gist was not updated."
+                echo "## Gist synchronization"
+                echo ""
+                echo "No changes detected. Nothing was uploaded." >> "$GITHUB_STEP_SUMMARY"
+              else
+                # PATCH only the files object, not creation-only fields.
+                patch=$(jq '{files: .files}' <<< "$payload")
+                response=$(api_request PATCH "/$GIST_ID" "$patch")
+
+                echo "Gist updated: $(jq -r '.html_url' <<< "$response")"
+
+                {
+                  echo "## Gist updated"
+                  echo ""
+                  echo "- **ID:** $GIST_ID"
+                  echo "- **URL:** $(jq -r '.html_url' <<< "$response")"
+                  echo "- **Files:** $(jq '.files | length' <<< "$response")"
+                } >> "$GITHUB_STEP_SUMMARY"
+              fi
+              ;;
+
+            delete)
+              echo "Deleting Gist $GIST_ID..."
+
+              api_request DELETE "/$GIST_ID" > /dev/null
+
+              echo "Gist successfully deleted."
+
+              {
+                echo "## Gist deleted"
+                echo ""
+                echo "Gist \`$GIST_ID\` was successfully deleted."
+              } >> "$GITHUB_STEP_SUMMARY"
+              ;;
+
+          esac
