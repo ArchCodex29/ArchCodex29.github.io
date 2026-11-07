@@ -159,7 +159,8 @@ class GitHubGistClient:
         gist_id: str,
         add_files: dict | None = None,
         edit_files: dict | None = None,
-        delete_files: list[str] | None = None
+        delete_files: list[str] | None = None,
+        description: str | None = None
     ) -> dict:
         """
         Add, edit and/or delete files in an existing Gist.
@@ -207,13 +208,18 @@ class GitHubGistClient:
                 "A filename cannot appear in multiple update operations."
             )
 
-        if not all_names:
+        if not all_names and description is None:
             raise ValueError("No update operations provided.")
 
         # GitHub uses null to indicate file deletion.
         payload = {
             "files": self._format_files(add_files)
         }
+
+        if description is not None:
+            if not isinstance(description, str):
+                raise ValueError("Description must be a string.")
+            payload["description"] = description
 
         payload["files"].update(self._format_files(edit_files))
 

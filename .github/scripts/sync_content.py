@@ -23,6 +23,9 @@ import shutil
 import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
+from urllib.parse import unquote, urlsplit
+
+import yaml
 
 
 # ── Configuration ─────────────────────────────────────────────────────────────
@@ -43,6 +46,10 @@ IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg", ".mp4"}
 # Matches standard markdown image syntax: ![alt text](path/to/image.png)
 # Also captures optional title:           ![alt](path "title")
 MD_IMAGE_RE = re.compile(r'!\[([^\]]*)\]\(([^)\s]+)(\s+"[^"]*")?\)')
+MD_LINK_RE = re.compile(r'(?<!!)\[([^\]]*)\]\(([^)\s]+)(?:\s+"[^"]*")?\)')
+DEVLOG_FILENAME_RE = re.compile(r"^Devlog#(\d+) - .+\.md$")
+GIST_ID_RE = re.compile(r"^[0-9a-fA-F]{32}$")
+GITHUB_USERNAME_RE = re.compile(r"^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$")
 
 # ──────────────────────────────────────────────────────────────────────────────
 
@@ -159,6 +166,85 @@ def rewrite_image_refs(content: str, src_file: Path) -> str:
     return MD_IMAGE_RE.sub(replace, content)
 
 
+def rewrite_gist_refs(
+    content: str,
+    src_file: Path,
+    root: Path | None = None,
+) -> str:
+    """Rewrite validated local GDScript links to Hugo Gist shortcodes."""
+    repo_root = (root or Path(__file__).resolve().parents[2]).resolve()
+    source = src_file.resolve()
+
+    try:
+        source.relative_to(repo_root)
+    except ValueError:
+        print(f"  ⚠  markdown path escapes repo root, skipping Gist refs: {src_file}")
+        return content
+
+    devlog_match = DEVLOG_FILENAME_RE.fullmatch(source.name)
+    if not devlog_match:
+        if any(match.group(2).lower().endswith(".gd") for match in MD_LINK_RE.finditer(content)):
+            print(f"  ⚠  cannot identify dev-log asset folder for: {source}")
+        return content
+
+    devlog_dir = (source.parent / f"Devlog_{devlog_match.group(1)}").resolve()
+    username = os.getenv("GIST_USERNAME", "ArchCodex29")
+    if len(username) > 39 or not GITHUB_USERNAME_RE.fullmatch(username):
+        print(f"  ⚠  invalid GIST_USERNAME, Gist references left unchanged: {username!r}")
+        return content
+
+    def replace(match: re.Match) -> str:
+        reference = match.group(2)
+        try:
+            parsed = urlsplit(reference)
+        except ValueError:
+            return match.group(0)
+
+        if parsed.scheme or parsed.netloc or reference.startswith("/"):
+            return match.group(0)
+        if Path(unquote(parsed.path)).suffix.lower() != ".gd":
+            return match.group(0)
+
+        local_file = (source.parent / unquote(parsed.path)).resolve()
+        try:
+            local_file.relative_to(repo_root)
+        except ValueError:
+            print(f"  ⚠  Gist reference escapes repo root, skipping: {reference}")
+            return match.group(0)
+
+        if local_file.parent != devlog_dir:
+            print(
+                f"  ⚠  Gist reference must target a top-level file in "
+                f"{devlog_dir.name}: {reference}"
+            )
+            return match.group(0)
+        if not local_file.is_file():
+            print(f"  ⚠  GDScript file not found, reference left unchanged: {local_file}")
+            return match.group(0)
+
+        metadata_path = devlog_dir / "gist.yml"
+        try:
+            metadata = yaml.safe_load(metadata_path.read_text(encoding="utf-8"))
+        except FileNotFoundError:
+            print(f"  ⚠  Gist metadata not found, reference left unchanged: {metadata_path}")
+            return match.group(0)
+        except (OSError, yaml.YAMLError) as error:
+            print(f"  ⚠  could not read Gist metadata {metadata_path}: {error}")
+            return match.group(0)
+
+        gist_id = metadata.get("id") if isinstance(metadata, dict) else None
+        if not isinstance(gist_id, str) or not GIST_ID_RE.fullmatch(gist_id):
+            print(f"  ⚠  invalid Gist ID in {metadata_path}, reference left unchanged")
+            return match.group(0)
+
+        return (
+            f'{{{{< gist user="{username}" id="{gist_id}" '
+            f'file="{local_file.name}" >}}}}'
+        )
+
+    return MD_LINK_RE.sub(replace, content)
+
+
 def sync_markdown(src: Path) -> None:
     """
     Process one markdown file:
@@ -190,6 +276,7 @@ def sync_markdown(src: Path) -> None:
 
     body = src.read_text(encoding="utf-8")
     body = rewrite_image_refs(body, src)
+    body = rewrite_gist_refs(body, src)
 
     # dest = SITE_CONTENT / Path(*parts)
     dest_name = src.name.removesuffix('.draft.md') + '.md' if is_draft else src.name
