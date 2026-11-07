@@ -1,4 +1,5 @@
-name: Gist CRUD - Proof of Concept
+
+name: Gist CRUD - Python Client PoC
 
 on:
   workflow_dispatch:
@@ -50,268 +51,228 @@ jobs:
       VISIBILITY: ${{ inputs.visibility }}
       CONFIRM_DELETE: ${{ inputs.confirm_delete }}
       SOURCE_DIR: test-gist-folder
-      GIST_DESCRIPTION: "Gist CRUD PoC - test-gist-folder"
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Validate inputs and prepare files
-        id: prepare
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          if [[ -z "$GIST_TOKEN" ]]; then
-            echo "::error::GIST_TOKEN secret is missing."
-            exit 1
-          fi
-
-          if [[ ! -d "$SOURCE_DIR" ]]; then
-            echo "::error::Source directory not found: $SOURCE_DIR"
-            exit 1
-          fi
-
-          case "$OPERATION" in
-            create)
-              ;;
-            read|update|delete)
-              if [[ -z "$GIST_ID" ]]; then
-                echo "::error::Gist ID is required for $OPERATION."
-                exit 1
-              fi
-              ;;
-            *)
-              echo "::error::Invalid operation."
-              exit 1
-              ;;
-          esac
-
-          if [[ "$OPERATION" == "delete" && "$CONFIRM_DELETE" != "yes" ]]; then
-            echo "::error::Deletion not confirmed."
-            exit 1
-          fi
-
-          if [[ "$OPERATION" == "create" || "$OPERATION" == "update" ]]; then
-            count=0
-            declare -A seen=()
-
-            while IFS= read -r -d '' file; do
-              filename="${file#"$SOURCE_DIR"/}"
-
-              # Gists don't provide directory structures.
-              # Reject nested paths rather than silently flattening them.
-              if [[ "$filename" == */* ]]; then
-                echo "::error::Nested files are not supported: $filename"
-                exit 1
-              fi
-
-              if [[ -n "${seen[$filename]+x}" ]]; then
-                echo "::error::Duplicate filename: $filename"
-                exit 1
-              fi
-
-              seen["$filename"]=1
-              count=$((count + 1))
-            done < <(find "$SOURCE_DIR" -type f -print0)
-
-            if [[ "$count" -eq 0 ]]; then
-              echo "::error::No files found in $SOURCE_DIR"
-              exit 1
-            fi
-
-            echo "Found $count source files."
-          fi
+      - name: Configure Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
 
       - name: Execute Gist operation
         shell: bash
         run: |
           set -euo pipefail
 
-          API="https://api.github.com/gists"
+          python <<'PY'
+          import os
+          import sys
+          from pathlib import Path
 
-          api_request() {
-            local method="$1"
-            local endpoint="$2"
-            local data="${3:-}"
+          from automation.github.gist_client import (
+              GitHubGistClient,
+              GitHubGistError
+          )
 
-            local args=(
-              -sS
-              --fail-with-body
-              -X "$method"
-              -H "Authorization: Bearer $GIST_TOKEN"
-              -H "Accept: application/vnd.github+json"
-              -H "X-GitHub-Api-Version: 2022-11-28"
-            )
+          operation = os.environ["OPERATION"]
+          gist_id = os.environ.get("GIST_ID", "").strip()
+          visibility = os.environ["VISIBILITY"]
+          confirm_delete = os.environ["CONFIRM_DELETE"]
 
-            if [[ -n "$data" ]]; then
-              args+=(
-                -H "Content-Type: application/json"
-                -d "$data"
+          source_dir = Path(os.environ["SOURCE_DIR"])
+
+          # Validate inputs
+          if not os.environ.get("GIST_TOKEN"):
+              raise SystemExit("GIST_TOKEN secret is missing.")
+
+          if operation in ("read", "update", "delete") and not gist_id:
+              raise SystemExit(
+                  f"A Gist ID is required for '{operation}'."
               )
-            fi
 
-            curl "${args[@]}" "$API$endpoint"
-          }
+          if operation == "delete" and confirm_delete != "yes":
+              raise SystemExit("Deletion not confirmed.")
 
-          # Build a JSON payload from the local files.
-          build_payload() {
-            local payload
-            payload=$(jq -n \
-              --arg description "$GIST_DESCRIPTION" \
-              --argjson public "$([[ "$VISIBILITY" == "public" ]] && echo true || echo false)" \
-              '{description: $description, public: $public, files: {}}')
+          if operation in ("create", "update"):
+              if not source_dir.is_dir():
+                  raise SystemExit(
+                      f"Source directory not found: {source_dir}"
+                  )
 
-            while IFS= read -r -d '' file; do
-              local filename="${file#"$SOURCE_DIR"/}"
+              files = {
+                  path.name: path.read_text(encoding="utf-8")
+                  for path in source_dir.iterdir()
+                  if path.is_file()
+              }
 
-              payload=$(jq \
-                --arg filename "$filename" \
-                --rawfile content "$file" \
-                '.files[$filename] = {content: $content}' \
-                <<< "$payload")
-            done < <(find "$SOURCE_DIR" -maxdepth 1 -type f -print0)
+              if not files:
+                  raise SystemExit(
+                      f"No files found in {source_dir}."
+                  )
+          else:
+              files = {}
 
-            echo "$payload"
-          }
+          client = GitHubGistClient()
 
-          case "$OPERATION" in
+          try:
 
-            create)
-              echo "Creating a new Gist..."
+              # CREATE
+              if operation == "create":
+                  print("Creating Gist...")
 
-              payload=$(build_payload)
-              response=$(api_request POST "" "$payload")
+                  gist = client.create_gist(
+                      description="Gist CRUD PoC - test-gist-folder",
+                      files=files,
+                      public=(visibility == "public")
+                  )
 
-              id=$(jq -r '.id' <<< "$response")
-              url=$(jq -r '.html_url' <<< "$response")
+                  gist_id = gist["id"]
+                  gist_url = gist["html_url"]
 
-              echo "Gist created: $url"
+                  print(f"Created Gist: {gist_url}")
 
-              {
-                echo "## Gist created"
-                echo ""
-                echo "- **ID:** \`$id\`"
-                echo "- **URL:** $url"
-                echo "- **Visibility:** $VISIBILITY"
-                echo ""
-                echo "Use this ID for subsequent operations."
-              } >> "$GITHUB_STEP_SUMMARY"
+                  with open(
+                      os.environ["GITHUB_STEP_SUMMARY"], "a"
+                  ) as summary:
+                      summary.write(
+                          "## Gist created\n\n"
+                          f"- **ID:** `{gist_id}`\n"
+                          f"- **URL:** {gist_url}\n"
+                          f"- **Visibility:** {visibility}\n"
+                          f"- **Files:** {', '.join(files.keys())}\n"
+                      )
 
-              echo "GIST_ID=$id" >> "$GITHUB_OUTPUT"
-              ;;
+              # READ
+              elif operation == "read":
+                  print(f"Reading Gist {gist_id}...")
 
-            read)
-              echo "Reading Gist $GIST_ID..."
+                  gist = client.get_gist(gist_id)
 
-              response=$(api_request GET "/$GIST_ID")
+                  print(f"Description: {gist['description']}")
+                  print(f"URL: {gist['html_url']}")
+                  print(f"Public: {gist['public']}")
 
-              echo "Description: $(jq -r '.description' <<< "$response")"
-              echo "URL: $(jq -r '.html_url' <<< "$response")"
+                  remote_files = gist.get("files", {})
 
-              {
-                echo "## Gist contents"
-                echo ""
-                echo "- **ID:** $GIST_ID"
-                echo "- **URL:** $(jq -r '.html_url' <<< "$response")"
-                echo "- **Public:** $(jq -r '.public' <<< "$response")"
-                echo ""
-                echo "### Files"
-                echo ""
-              } >> "$GITHUB_STEP_SUMMARY"
+                  with open(
+                      os.environ["GITHUB_STEP_SUMMARY"], "a"
+                  ) as summary:
+                      summary.write(
+                          "## Gist contents\n\n"
+                          f"- **ID:** `{gist_id}`\n"
+                          f"- **URL:** {gist['html_url']}\n"
+                          f"- **Public:** {gist['public']}\n\n"
+                          "### Files\n\n"
+                      )
 
-              while IFS= read -r filename; do
-                echo "- \`$filename\`" >> "$GITHUB_STEP_SUMMARY"
+                      for filename, file_info in remote_files.items():
+                          content = file_info.get("content")
 
-                echo ""
-                echo "===== $filename ====="
-                jq -r --arg f "$filename" '.files[$f].content // "[Content unavailable or truncated]"' <<< "$response"
-                echo "======================"
+                          print(f"\n===== {filename} =====")
+                          print(
+                              content if content is not None
+                              else "[Content unavailable or truncated]"
+                          )
 
-              done < <(jq -r '.files | keys[]' <<< "$response")
-              ;;
+                          summary.write(f"- `{filename}`\n")
 
-            update)
-              echo "Synchronizing Gist $GIST_ID..."
+              # UPDATE
+              elif operation == "update":
+                  print(f"Synchronizing Gist {gist_id}...")
 
-              # Retrieve the current remote state.
-              remote=$(api_request GET "/$GIST_ID")
+                  remote = client.get_gist(gist_id)
+                  remote_files = remote.get("files", {})
 
-              # Build the desired local state.
-              payload=$(build_payload)
+                  # Determine additions, modifications and deletions.
+                  add_files = {
+                      name: content
+                      for name, content in files.items()
+                      if name not in remote_files
+                  }
 
-              # Preserve the existing description and visibility.
-              payload=$(jq \
-                --arg description "$(jq -r '.description // ""' <<< "$remote")" \
-                --argjson public "$(jq '.public' <<< "$remote")" \
-                '.description = $description | .public = $public' \
-                <<< "$payload")
+                  edit_files = {}
 
-              # Mark remote files missing locally for deletion.
-              while IFS= read -r filename; do
-                if ! jq -e --arg f "$filename" '.files | has($f)' <<< "$payload" > /dev/null; then
-                  echo "Removing remote file: $filename"
+                  for name, content in files.items():
+                      if name in remote_files:
+                          remote_content = remote_files[name].get("content")
 
-                  payload=$(jq \
-                    --arg filename "$filename" \
-                    '.files[$filename] = null' \
-                    <<< "$payload")
-                fi
-              done < <(jq -r '.files | keys[]' <<< "$remote")
+                          if remote_content is None:
+                              raise SystemExit(
+                                  f"Cannot compare '{name}': "
+                                  "remote content is unavailable."
+                              )
 
-              # Avoid unnecessary API updates.
-              changed=false
+                          if content != remote_content:
+                              edit_files[name] = content
 
-              while IFS= read -r filename; do
-                local_content=$(jq -r --arg f "$filename" '.files[$f].content' <<< "$payload")
-                remote_content=$(jq -r --arg f "$filename" '.files[$f].content // ""' <<< "$remote")
+                  delete_files = [
+                      name
+                      for name in remote_files
+                      if name not in files
+                  ]
 
-                if [[ "$local_content" != "$remote_content" ]]; then
-                  changed=true
-                  echo "Changed or added: $filename"
-                fi
-              done < <(jq -r '.files | to_entries[] | select(.value != null) | .key' <<< "$payload")
+                  print(f"Files to add: {list(add_files)}")
+                  print(f"Files to edit: {list(edit_files)}")
+                  print(f"Files to delete: {delete_files}")
 
-              while IFS= read -r filename; do
-                if ! jq -e --arg f "$filename" '.files | has($f)' <<< "$payload" > /dev/null; then
-                  changed=true
-                fi
-              done < <(jq -r '.files | keys[]' <<< "$remote")
+                  if not (add_files or edit_files or delete_files):
+                      print("No changes detected.")
 
-              if [[ "$changed" == false ]]; then
-                echo "No changes detected. Gist was not updated."
-                echo "## Gist synchronization"
-                echo ""
-                echo "No changes detected. Nothing was uploaded." >> "$GITHUB_STEP_SUMMARY"
-              else
-                # PATCH only the files object, not creation-only fields.
-                patch=$(jq '{files: .files}' <<< "$payload")
-                response=$(api_request PATCH "/$GIST_ID" "$patch")
+                      with open(
+                          os.environ["GITHUB_STEP_SUMMARY"], "a"
+                      ) as summary:
+                          summary.write(
+                              "## Gist synchronization\n\n"
+                              "No changes detected. Nothing uploaded.\n"
+                          )
 
-                echo "Gist updated: $(jq -r '.html_url' <<< "$response")"
+                  else:
+                      updated = client.update_gist(
+                          gist_id=gist_id,
+                          add_files=add_files,
+                          edit_files=edit_files,
+                          delete_files=delete_files
+                      )
 
-                {
-                  echo "## Gist updated"
-                  echo ""
-                  echo "- **ID:** $GIST_ID"
-                  echo "- **URL:** $(jq -r '.html_url' <<< "$response")"
-                  echo "- **Files:** $(jq '.files | length' <<< "$response")"
-                } >> "$GITHUB_STEP_SUMMARY"
-              fi
-              ;;
+                      print(f"Updated Gist: {updated['html_url']}")
 
-            delete)
-              echo "Deleting Gist $GIST_ID..."
+                      with open(
+                          os.environ["GITHUB_STEP_SUMMARY"], "a"
+                      ) as summary:
+                          summary.write(
+                              "## Gist updated\n\n"
+                              f"- **ID:** `{gist_id}`\n"
+                              f"- **URL:** {updated['html_url']}\n"
+                              f"- **Added:** {len(add_files)}\n"
+                              f"- **Edited:** {len(edit_files)}\n"
+                              f"- **Deleted:** {len(delete_files)}\n"
+                          )
 
-              api_request DELETE "/$GIST_ID" > /dev/null
+              # DELETE
+              elif operation == "delete":
+                  print(f"Deleting Gist {gist_id}...")
 
-              echo "Gist successfully deleted."
+                  client.delete_gist(gist_id)
 
-              {
-                echo "## Gist deleted"
-                echo ""
-                echo "Gist \`$GIST_ID\` was successfully deleted."
-              } >> "$GITHUB_STEP_SUMMARY"
-              ;;
+                  print("Gist successfully deleted.")
 
-          esac
+                  with open(
+                      os.environ["GITHUB_STEP_SUMMARY"], "a"
+                  ) as summary:
+                      summary.write(
+                          "## Gist deleted\n\n"
+                          f"Gist `{gist_id}` was successfully deleted.\n"
+                      )
+
+              else:
+                  raise SystemExit(
+                      f"Unsupported operation: {operation}"
+                  )
+
+          except GitHubGistError as error:
+              print(f"Gist API error: {error}", file=sys.stderr)
+              raise SystemExit(1)
+
+          PY
