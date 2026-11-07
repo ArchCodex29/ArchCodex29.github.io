@@ -2,6 +2,7 @@
 """Synchronize NanoSwarm dev-log code files with GitHub Gists."""
 
 import argparse
+import os
 import re
 import subprocess
 import sys
@@ -276,6 +277,48 @@ def sync_update(
     return sync_devlogs(devlogs, root, client)
 
 
+def write_github_summary(
+    mode: str,
+    summary: dict[str, int] | None = None,
+    error: str | None = None,
+) -> None:
+    """Append a concise result to the Actions run summary when available."""
+    summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
+    if not summary_path:
+        return
+
+    lines = ["## Gist synchronization", "", f"- Mode: `{mode}`"]
+    if error is not None:
+        lines.extend([
+            "- Result: **Failed**",
+            "",
+            "```text",
+            error,
+            "```",
+        ])
+    else:
+        lines.extend([
+            "- Result: **Succeeded**",
+            "",
+            "| Outcome | Count |",
+            "| --- | ---: |",
+        ])
+        for outcome in ("created", "updated", "unchanged", "skipped"):
+            lines.append(f"| {outcome.title()} | {(summary or {}).get(outcome, 0)} |")
+        if mode == "update":
+            lines.extend([
+                "",
+                "Update mode falls back to full sync if the push range is unavailable; "
+                "see the job log for details.",
+            ])
+
+    try:
+        with Path(summary_path).open("a", encoding="utf-8") as summary_file:
+            summary_file.write("\n".join(lines) + "\n")
+    except OSError as write_error:
+        print(f"Could not write GitHub Actions summary: {write_error}", file=sys.stderr)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -302,9 +345,11 @@ def main() -> int:
             summary = sync_all(root)
     except (GistSyncError, GitHubGistError, ValueError) as error:
         print(f"Gist sync failed: {error}", file=sys.stderr)
+        write_github_summary(args.mode, error=str(error))
         return 1
 
     print(f"Gist sync summary: {summary}")
+    write_github_summary(args.mode, summary=summary)
     return 0
 
 

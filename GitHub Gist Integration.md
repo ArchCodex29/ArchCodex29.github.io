@@ -2,9 +2,11 @@
 
 
 
-Architecture agreed
+Architecture implemented
 
-Implementation pending
+Phases 1–4 are implemented and have been verified with local tests and live GitHub Actions runs. Phase 5 hardening is in progress. The workflow is integrated into `.github/workflows/hugo.yml`, with separate `gist_sync` and `site_sync` jobs.
+
+The original implementation roadmap below is retained as a planning record; current behavior and recovery instructions are summarized in section 11.
 
 
 
@@ -458,7 +460,7 @@ Step 1.3 — Test locally
 
 ## Phase 2 — Hugo content integration
 
-Pending
+Complete
 
 Step 2.1 — Modify `sync_content.py`
 
@@ -480,7 +482,7 @@ Step 2.2 — Test publishing transformation
 
 ## Phase 3 — Full sync GitHub Action
 
-Pending
+Complete. Implemented in the existing `hugo.yml` workflow rather than a separate workflow file.
 
 Step 3.1 — Create the new workflow
 
@@ -506,7 +508,7 @@ Step 3.3 — Test manually
 
 ## Phase 4 — Incremental synchronization
 
-Pending
+Complete
 
 Step 4.1 — Add Git change detection
 
@@ -529,7 +531,7 @@ Step 4.3 — Enable push trigger
 
 ## Phase 5 — Cleanup and hardening
 
-Pending
+In progress
 
 - Add useful logging and GitHub Actions summaries.
 - Add dry-run support if useful.
@@ -544,18 +546,20 @@ These are not blockers for the initial implementation, but should be revisited w
 
 | Topic                    | Current position                                                                                        |
 | ------------------------ | ------------------------------------------------------------------------------------------------------- |
-| Gist visibility          | Reuse the existing client's visibility option; settle the default before implementation                 |
-| Gist description         | Generate from the dev-log identity                                                                      |
+| Gist visibility          | Secret/unlisted (`public=False`)                                                                         |
+| Gist description         | Matching Markdown filename stem, e.g. `Devlog#99 - Testing the Gist Integration`                         |
 | Empty Gist folders       | Don't automatically delete remote Gists                                                                 |
 | Missing remote Gist      | Report an error; don't silently recreate                                                                |
 | Duplicate code filenames | Not an issue under the one-Gist-per-dev-log, top-level-only rule                                        |
 | YAML library             | PyYAML                                                                                                  |
-| GitHub username          | Central configuration                                                                                   |
+| GitHub username          | Workflow variable `GIST_USERNAME`, defaulting to `ArchCodex29`                                            |
 | Binary files             | Only `.gd` files are synchronized                                                                       |
-| Workflow concurrency     | Add during hardening                                                                                    |
-| Hugo deployment          | Integrate into the new workflow rather than relying on a push-triggered workflow after metadata commits |
+| Workflow concurrency     | Existing `pages` concurrency group serializes runs                                                       |
+| Hugo deployment          | Existing `hugo.yml`; `gist_sync` commits metadata and passes its resulting SHA to `site_sync`             |
 
-## 10. First task when resuming
+## 10. Original first implementation task
+
+This section records the original starting point; Phases 1–4 below are now complete.
 
 I'd resume at Phase 1, Step 1.2: implementing `gist_sync.py`.
 
@@ -573,3 +577,20 @@ That gives us a manageable test:
 Once that works, we move to the publishing transformation.
 
 The guiding principle for the whole project: each stage should be independently testable, and we should only connect the stages once their individual behavior is reliable. That keeps the automation maintainable and avoids turning your weekly publishing routine into another project of its own.
+
+## 11. Current implementation and recovery
+
+### Current workflow
+
+The existing `.github/workflows/hugo.yml` workflow runs `gist_sync` before `site_sync`, then builds and deploys the site. A manual dispatch performs a full reconciliation; a push performs an incremental sync across the complete push range. If that range cannot be determined, the script falls back to full sync. The `gist_sync` job conditionally commits changed `gist.yml` files and passes its resulting commit SHA to `site_sync`, so the publishing transformation reads the updated metadata. The Gist sync writes a summary to the GitHub Actions run summary. Failures stop the dependent publishing jobs.
+
+Gists are secret/unlisted. The workflow requires the `GIST_TOKEN` secret. `GIST_USERNAME` is read from repository variables and defaults to `ArchCodex29`.
+
+### Recovery procedures
+
+- **A sync reports an invalid ID or cannot retrieve the Gist:** check `gamedev/nanoswarm/Devlog_N/gist.yml` and confirm the ID is correct and the `GIST_TOKEN` still has access. Fix credentials or metadata and rerun. Do not remove metadata merely to bypass an API or permission error; doing so can create a duplicate Gist.
+- **The remote Gist was deleted permanently:** first confirm it is actually gone. Delete that dev log's `gist.yml` in the repository and commit the deletion. Then manually dispatch the workflow on that branch. Full sync will create a replacement secret Gist and commit new metadata.
+- **The metadata file was deleted but the remote Gist still exists:** restore `gist.yml` from a commit where it was valid, then push. Do not run full sync while metadata is absent unless you intend to create a replacement Gist.
+- **A manual full sync needs to reconcile all dev logs:** use `workflow_dispatch` on the intended branch. Empty asset folders do not cause remote Gists to be deleted.
+
+The workflow's `pages` concurrency group prevents overlapping publishes. The standard `GITHUB_TOKEN` metadata push does not start a second workflow run.

@@ -1,3 +1,4 @@
+import os
 import tempfile
 import unittest
 from pathlib import Path
@@ -268,6 +269,31 @@ class GistSyncTests(unittest.TestCase):
 
         self.assertEqual(result, {"created": 0, "updated": 0, "unchanged": 0, "skipped": 0})
         client_class.assert_not_called()
+
+    def test_github_summary_reports_success_counts(self):
+        summary_path = self.root / "step-summary.md"
+        summary = {"created": 1, "updated": 2, "unchanged": 3, "skipped": 4}
+
+        with patch.dict(os.environ, {"GITHUB_STEP_SUMMARY": str(summary_path)}):
+            gist_sync.write_github_summary("update", summary=summary)
+
+        content = summary_path.read_text(encoding="utf-8")
+        self.assertIn("Mode: `update`", content)
+        self.assertIn("| Created | 1 |", content)
+        self.assertIn("| Updated | 2 |", content)
+        self.assertIn("| Unchanged | 3 |", content)
+        self.assertIn("| Skipped | 4 |", content)
+        self.assertIn("falls back to full sync", content)
+
+    def test_github_summary_reports_failure(self):
+        summary_path = self.root / "step-summary.md"
+
+        with patch.dict(os.environ, {"GITHUB_STEP_SUMMARY": str(summary_path)}):
+            gist_sync.write_github_summary("full", error="invalid Gist ID")
+
+        content = summary_path.read_text(encoding="utf-8")
+        self.assertIn("Result: **Failed**", content)
+        self.assertIn("invalid Gist ID", content)
 
 
 if __name__ == "__main__":
