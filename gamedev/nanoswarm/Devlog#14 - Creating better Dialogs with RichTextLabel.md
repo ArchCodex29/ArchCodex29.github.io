@@ -2,7 +2,7 @@
 
 Greetings, fellow traveler. Looking for ways to improve your text boxes ? Maybe ideas on how to improve your game clarity ? Or saw the title and got curious ?
 
-![cover image](Devlog14_cover.png)
+![cover image](Devlog_14/Devlog14_cover.png)
 
 Then this might help you. In this week's blog post, I show you the improved "Tutorial Dialog" component I implemented and talk briefly about the next planned changes.
 
@@ -83,7 +83,7 @@ Quick note : If you want to use a second class as the type for one of your prope
 
 Now, for the visuals. I chose a very simple approach for this because, honestly, I am not that good at "UI" elements. So I am sticking with plain buttons and text with black and white colors (most of the time).
 
-![Tutorial Dialog Editor](tutorial_dialog_editor.png)
+![Tutorial Dialog Editor](Devlog_14/tutorial_dialog_editor.png)
 
 See ? Very basic elements. I am using a `PanelContainer` as my base, with `Buttons` and a `RichTextLabel` for the main elements. And a few `MarginContainers` so the elements don't render too close to each other.
 
@@ -97,11 +97,11 @@ The `RichTextLabel` allows us to render "plain text" by default, but it allows u
 
 It can take make your text go from this :
 
-![Plain Text Sample](sample_no_bbcode.png)
+![Plain Text Sample](Devlog_14/sample_no_bbcode.png)
 
 To this, using the correct tags :
 
-![BBCode Text Sample](sample_with_bbcode.png)
+![BBCode Text Sample](Devlog_14/sample_with_bbcode.png)
 
 > Ooh, it looks way better. Then why isn't BBCode enabled by default ?
 

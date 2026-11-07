@@ -2,13 +2,13 @@
 
 Greetings, fellow traveler. Looking into adding some moving parts in your 2D tile maps ? Maybe you've already tried and got stuck with weird placement or clipping ?
 
-![cover image](Devlog8_cover.png)
+![cover image](Devlog_8/Devlog8_cover.png)
 
 Then this might help! In this week's blog post I write about adding custom `Node2D` scenes on top of an existing `TileMapLayer`, the issues that spun from it and how I was able to fix them, ending up with an almost seamless combination of `TileMapLayers` and `Node2D` instances!
 
 Let's start with a quick question : In this image, can you tell which building is a custom `Node2D` with `Sprite2D` and which belongs to my `TileMapLayers` ?
 
-![tiles vs node](tile_vs_node.png)
+![tiles vs node](Devlog_8/tile_vs_node.png)
 
 > Hum, the middle one with all the windows ? 'Cause the bottom part is different.
 
@@ -22,7 +22,7 @@ Well, it needs careful placement but that's only part of it. To get the effect w
 
 Here's a few examples, side by side, of the issues I got when I tried to do this :
 
-![example issues tiles vs node](tile_vs_node_bad.png)
+![example issues tiles vs node](Devlog_8/tile_vs_node_bad.png)
 
 It ranged from the Node instance being always on top (or bottom) of everything, not (Y) sorting properly when placed behind other tile-based things and, when that worked, it would *always* stay behind other tile-based things, even when it was clearly in front of it.
 
@@ -40,25 +40,25 @@ Since I will be reusing my current assets, I decided to create a `StaticBody2D` 
 
 For the textures themselves, I discovered the "atlas texture" option which fits quite well with what I already had! I am able to use one sprite image with all the tiles and then configure which "piece" to use for the final texture. Using our `TileSet` setup from earlier in the project, we know already the measures for the width and height of each tile, it's just a matter of choosing the correct X and Y coordinates for the "tile" we want! 
 
-![Sprite2D texture setting](sprite_atlas_setting.png)
+![Sprite2D texture setting](Devlog_8/sprite_atlas_setting.png)
 
 Also, quick tip : for the X and Y values, we can use the base width and height values (respectively) and multiply by the "coordinates" in the atlas image. If we write in the input the formula (example : 130 * 5) Godot will do the math and write the final value for us!
 
 With this, I have access to all the tiles I currently use in the `TileMapLayers`. In the future, I will try to change the displayed "tiles" in runtime, but for now I will stick with this very "turret-like" turret.
 
-![Turret Visual](turret_sample.png)
+![Turret Visual](Devlog_8/turret_sample.png)
 
 Then, to place the Sprites in their correct heights, I change `Position` > `Y` of each Sprite. We can check the values we used on the `TileMapLayers` to create the multiple heights and use those here. Also, notice how the final result seems to be "floating" in the air, when compared to the origin of the Scene. This is intended, so it "sits" properly when I instance it on top of the "foundation" tiles I place during the map generation.
 
 Finally, for the code snippet to spawn one turret into the scene, I ended up with something similar to this (notice the "tileOffset" that I used to make the turret position match a tile's bottom left corner):
 
-![Turret Spawn Snippet](turret_spawn_snippet.png)
+![Turret Spawn Snippet](Devlog_8/turret_spawn_snippet.png)
 
 ### [Tried] Simply adding the Turret on the main Scene
 
 Instancing a Turret side-by-side of the `TileMapLayers` makes it so the sprites render either on top or at the bottom of existing Tiles. Moving it up or down in the node tree only "shifts" the issue one way or the other, so it's a no go. Without mentioning the fact that it would be cumbersome to manage later on, having all the nodes in the same "level" like this.
 
-![Spawning Issue 1](spawning_issue_1.png)
+![Spawning Issue 1](Devlog_8/spawning_issue_1.png)
 
 After researching online, multiple sources point out "y sorting" as root cause for this. I already have it enabled on all my `TileMapLayers`, and enabling it messes up with my `Sprite2D` ordering and placement, so there must be another place to configure it.
 
@@ -66,7 +66,7 @@ After researching online, multiple sources point out "y sorting" as root cause f
 
 Exploring around the Godot editor, I found out that we can configure the `Y Sort Origin` property on a per-tile basis by going to `TileSet` > `Select` > picking a tile > looking under `Rendering`. Using the same height values we've used multiples times by now, I can see some "improvements", but still far from what I want. 
 
-![Spawning Issue 2](spawning_issue_2.png)
+![Spawning Issue 2](Devlog_8/spawning_issue_2.png)
 
 Better, but not good enough. Not only I still have an unorganized list of nodes from the first idea, I now have restricted myself by having to pair one tile to one "valid height".
 
@@ -80,7 +80,7 @@ By having two `Node2D` nodes acting as wrappers as childs of my root node, one f
 
 Now, all we really need to do is toggling `Y Sort Enabled` under `Ordering` in each wrapper node and it's done
 
-![Spawning Solved](spawning_solved.png)
+![Spawning Solved](Devlog_8/spawning_solved.png)
 
 > Really ? That's it ?
 
@@ -88,7 +88,7 @@ Yup! Sometimes the simplest answer is, more often than not, the correct answer. 
 
 Using this, I was finally able to place the Turret nodes in between my tile-based buildings with none of the issues!
 
-![Sample Generation](sample_turrets_and_buildings.png)
+![Sample Generation](Devlog_8/sample_turrets_and_buildings.png)
 
 
 Quick mention : Since I now have *more* elements being created on the city, I naturally had to update the saving/loading-related methods to accomodate the new Turret info. I decided to create a new "CityData" class that contains two properties (for now) : the existing CityLayout and an array of "EnemyData" elements that contains the info I need about the Turrets I placed, with some tricks here and there to help me *not* touch this so soon in case I expand with more enemy types. If you're curious about this too, let me know.

@@ -2,7 +2,7 @@
 
 Greetings, fellow traveler. Bored of waiting for your Resources to load ? Maybe just wanna know how to add markers to your own map ? 
 
-![cover image](Devlog18_cover.png)
+![cover image](Devlog_18/Devlog18_cover.png)
 
 Wait no longer! In this week's blog post, I quickly bring you up to speed on the latest additions to the OverWorld map, how I implemented loading in and out of each City and how I *didn't* wait for those loadings to happen, thanks to Godot's `ResourceLoader`. 
 
@@ -14,7 +14,7 @@ The first one was the ability to dynamically add little "City PoI" (Point of Int
 
 It looks something like this :
 
-![OverWorld Sample](overworld_map_sample.png)
+![OverWorld Sample](Devlog_18/overworld_map_sample.png)
 
 > Care to give a quick refresher ? 
 

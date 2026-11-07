@@ -2,14 +2,14 @@
 
 Greetings, fellow traveler. Back to check on my most recent developments ? Maybe wondering what the little squares are moving towards to ?
 
-![cover image](Devlog13_cover.png)
+![cover image](Devlog_13/Devlog13_cover.png)
 
 Wonder no more! In this week's blog post, I quickly showcase the new visuals for the Triggers and Actions, talk about the newly introduced "Core" `Node` and highlight a small component I really like - the health bar!
 
 ## New assets acquired
 During the recent developments, one thing that stood out to me were the placeholder icons I was using for the "card-like" visual representation of the sample Trigger and Actions I implemented for the game.
 
-![card visuals before](card-visuals-before.jpg)
+![card visuals before](Devlog_13/card-visuals-before.jpg)
 
 They "work", in the sense that they represent what they are supposed to (example : the "clock" for the timer trigger card), but they are a bit ...
 
@@ -23,7 +23,7 @@ It was a prototype! I did not want to spend money on something to then throw awa
 
 Recently, Kenney (the author of the free assets I use for everything else) had a really good deal on his ["All-in-1 Game Assets"](https://kenney.itch.io/kenney-game-assets) bundle, which I've been eyeing for a bit now. So ... I bought it! It has *a lot* of assets, including icons! So, after a few replacements and color changes, I got this improved version working:
 
-![card visuals after](card-visuals-after.png)
+![card visuals after](Devlog_13/card-visuals-after.png)
 
 > Oooh, it looks way better now! 
 
@@ -37,7 +37,7 @@ Until now, the little square units were moving either towards a nearby turret (t
 
 So, one of the recent additions was the "Core" building that is spawned on top on the "goal" foundation (pretty much like how I spawn the Turrets) and acts as the `Node` that all units target when not engaged in any other action.
 
-![Core](core-building.png)
+![Core](Devlog_13/core-building.png)
 
 > It's ... a building
 

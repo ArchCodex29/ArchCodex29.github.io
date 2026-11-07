@@ -2,7 +2,7 @@
 
 Greetings, fellow traveler. Working with 2D assets on a 2D plane, but want to do more ? Maybe by adding a 3rd dimension (height) to the mix ? 
 
-![cover image](Devlog6_cover.png)
+![cover image](Devlog_6/Devlog6_cover.png)
 
 I thought so too! This week I decided to add a little more "detail" to my city map generation by introducing "height", in the form of different "buildings" that I pick to place on specific "foundation" tiles in my base "ground" layer.
 
@@ -32,7 +32,7 @@ I'll write a small checklist, don't worry. Even I need it at this point:
 
 For starters, to add the new layers I went to my reusable City Layout scene and added 3 new TileMapLayers and made sure my root node is a Node2D (was a Node before) and turned on the `Ordering` > `Y Sort Enabled` on all nodes.
 
-![multiple layers](city_layout_multiple_layers.png)
+![multiple layers](Devlog_6/city_layout_multiple_layers.png)
 
 Then, to make sure the layers stack "vertically" just the way we want, we need to both shift the Y origin upwards and downwards.
 

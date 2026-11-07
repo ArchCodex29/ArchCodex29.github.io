@@ -2,7 +2,7 @@
 
 Greetings, fellow traveler. Are you familiar with the different types of loading ? *Background* loading, *Lazy* loading, *Eager* loading ... Not all of them ?
 
-![cover image](Devlog19_cover.png)
+![cover image](Devlog_19/Devlog19_cover.png)
 
 Don't worry! In this week's blog post, I will be highlighting the most common strategies to improve loading times (and resource usage) and how to apply them to a game project (or any project).
 

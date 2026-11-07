@@ -2,7 +2,7 @@
 
 Greetings, fellow traveler. Have you finished setting up your TileMapLayer's Terrains and Patterns ? Wondering how to use them in code ?
 
-![cover image](Devlog3_cover.png)
+![cover image](Devlog_3/Devlog3_cover.png)
 
 Wonder no more! In this week's blog post, I created the first version of my city layout generation, using both the Terrains and Patterns I talked about in my last post, as well as a playground scene that helps me test out all of this.
 
@@ -189,7 +189,7 @@ And that's it! No more tips for this week.
 
 Before finishing this post, here's a small demo of all of this working out
 
-![City Playground Showcase](playground_showcase.gif)
+![City Playground Showcase](Devlog_3/playground_showcase.gif)
 
 Hope this blog post was helpful in any way.  
 Got a question or just wanna discuss something? Feel free to reach out!  

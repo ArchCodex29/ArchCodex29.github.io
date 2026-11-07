@@ -2,7 +2,7 @@
 
 Greetings, fellow traveler. Ever thought how you could do *more* with your TileSets ? Grew tired of placing your hand-crafted Patterns randomly ?
 
-![cover image](Devlog4_cover.png)
+![cover image](Devlog_4/Devlog4_cover.png)
 
 Then this blog post might be for you! In this week's blog post I write about Godot's `Custom Resources` and how I started shaping my city layout generation to be more **data** driven, and less random.
 
@@ -56,7 +56,7 @@ Don't get me wrong, the TileSet's Pattern feature is great and all (I wrote abou
 
 At runtime, I don't know with only what the Pattern gives me (the Tile Data and its positions). In theory, I *could* associate a custom data layer to each tile (and I did) to each tile, and then cycle through each Tile in the Pattern looking for this info, but that doesn't seem like a good idea in the long run.
 
-![group patterns before](city_blueprints_before.png)
+![group patterns before](Devlog_4/city_blueprints_before.png)
 
 On the previous iteration of my layout algorithm, to dodge this issue I did this quick-and-dirty solution of creating one array per group that I wanted, and manually adding the index of each Pattern to their respective array. Which "works", yes, but it's not good. And the problem gets worse as soon as we start talking about being able to pick a specific Pattern by "level", by "zone" or any other type of info specific to the Pattern, not the sum of its Tiles.
 
@@ -64,13 +64,13 @@ With all that in mind, here is where the `Custom Resources` come in to solve thi
 
 In practice, looks something like this:
 
-![CityBlueprint Resource](city_blueprint_resource.png)
+![CityBlueprint Resource](Devlog_4/city_blueprint_resource.png)
 
 *I even threw in some extra `@export_category` tags to group the fields in the `Inspector` panel. Makes it look professional.*
 
 With this, I can create as many Resource files as I want (1 per "Blueprint") and load them dynamically with a quick method in my helper class:
 
-![group blueprints after](city_blueprints_after.png)
+![group blueprints after](Devlog_4/city_blueprints_after.png)
 
 Now, it's all a matter of adjusting my existing code to retrieve the pattern information from *this* collection of blueprints, instead of directly going to the `TileSet.get_pattern(index)`. And I can adjust my blueprint-picking logic to be anything that I want, as long as I have the data for it!
 

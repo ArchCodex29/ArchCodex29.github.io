@@ -2,7 +2,7 @@
 
 Greetings, fellow traveler. Curious how one can save to file multi-height TileMapLayers ? Maybe you're just wondering what I'm up to this week ?
 
-![cover image](Devlog7_cover.png)
+![cover image](Devlog_7/Devlog7_cover.png)
 
 Then welcome! This week I took the time to tackle some loose ends I left behind recently, in particular how to pack the info used to render multiple TileMapLayers into a single file to then be used in the game. 
 
@@ -28,7 +28,7 @@ So, what I wanted to achieve exactly ?
 
 After testing out a few ideas, here's the top level of what I came up with.
 
-![CityLayout class](city_layout_class.png)
+![CityLayout class](Devlog_7/city_layout_class.png)
 
 For the "points of interest", I created a simple class that is able to represent both the "Goal" and "Spawn" points with simple properties. For the "Map" itself, I have created the following :
 - The map is represented by an array of "StackedTiles" and is accompanied with a "size" property, which represents the length of the side of the map
@@ -43,7 +43,7 @@ As a bonus, I included a suite of utilitary methods to instanciate from a Varian
 
 Here's an example of said utility methods that help me transform the data's format to better suit my needs. I'd like to point out that each small class has its own "version" that I combine here, which makes it easier to read (for me, at least).
 
-![Utility methods](city_layout_class_utils.png)
+![Utility methods](Devlog_7/city_layout_class_utils.png)
 
 > Huh, the file structure does seem easy to understand. Now I get it!
 

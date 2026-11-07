@@ -2,7 +2,7 @@
 
 Greetings, fellow traveler. So far, we've placed a few blueprints in our city layout, some with road sections and some without. Wouldn't it be neat if we had one full road from the spawn point to the goal ?
 
-![cover image](Devlog5_cover.png)
+![cover image](Devlog_5/Devlog5_cover.png)
 
 Yes it would! And that is this week's dev blog theme! I improve my city layout generation by creating a step that completes the road path from point A to point B, using Godot's AStarGrid2D as a base plus my existing TileSet's custom data.
 

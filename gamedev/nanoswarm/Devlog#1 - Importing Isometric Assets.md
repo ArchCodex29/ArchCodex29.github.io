@@ -2,7 +2,7 @@
 
 Greetings, fellow traveler. Have you ever struggled with importing spritesheet assets into Godot ? Perhaps you are looking into it and stumbled upon this blog post ?
 
-![cover image](Devlog1_cover.png)
+![cover image](Devlog_1/Devlog1_cover.png)
 
 If so, then welcome! This week I decided to search for a set or two (or four) of assets I could use as a starting point in **NanoSwarm: Dominion**, struggled with the importing process and managed to surpass my difficulties and create an example of a simple city in isometric style
 
@@ -20,7 +20,7 @@ There are a lot of tools online one can use to create mockups by drag and droppi
 
 In any case, here's one of the mockup images. I posted this image (plus a few videos of a tech demo for this prototype) on my [X Profile](https://x.com/ApprenticeCodex), in case you're curious.
 
-![city mockup](isometric_city_mockup.jpg)
+![city mockup](Devlog_1/isometric_city_mockup.jpg)
 
 ## How to import 2D assets
 
@@ -37,7 +37,7 @@ Now, I got some assets and I know what I want to create. Time to import them int
 
 Well ... About that. I spent an hour or two scratching my head because I couldn't finish creating my **TileSet** with the "neatly organized" assets in the spritesheet image. I kept adjusting the tile size, the texture region size, toying with the tile layout setting randomly in hopes of fixing it, and no luck.
 
-![TileSet texture issues](tileset_import_issues.jpg)
+![TileSet texture issues](Devlog_1/tileset_import_issues.jpg)
 
 See ? Not one tile is correctly aligned.
 
@@ -68,7 +68,7 @@ Here's the simple walkthrough, step by step :
 
 * Now, for each image, make sure to fix the *Texture Region* to match the PNG actual size
 
-![Fixing Texture Region](tileset_import_manual.jpg)
+![Fixing Texture Region](Devlog_1/tileset_import_manual.jpg)
 
 * If you're using Isometric assets (I am), go back to the TileSet panel and change the *Tile Size* **Y** property to be half of the original value. So, 128/2 = 64
   * You can actually write "128/2" on the box the it calculates it for you
@@ -112,7 +112,7 @@ Now, with this matter settled, let's try and use the assets!
 
 Here's the example of a city I created using the assets. It's nothing much, but ... It's a stepping stone.
 
-![showcase result](isometric_city_example.jpg)
+![showcase result](Devlog_1/isometric_city_example.jpg)
 
 And ... that's all my progress so far!
 

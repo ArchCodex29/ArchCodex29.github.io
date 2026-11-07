@@ -2,7 +2,7 @@
 
 Greetings, fellow traveler. Have you been creating components for your game ? Need an idea on how to "start" wiring them together ?
 
-![cover image](Devlog10_cover.png)
+![cover image](Devlog_10/Devlog10_cover.png)
 
 I am in the same boat! In this week's (short) blog post, I write about why I decided to start creating the "tutorial" for my game, using the elements I've been creating so far and reusing a few others from previous prototypes.
 
@@ -25,7 +25,7 @@ It's still far from "finished', but at the time of writing I was able to:
 
 I'll go more in-depth on each component I create/improve as I finish them but, for now, here's a small tease:
 
-![tutorial wip](tutorial_wip.gif)
+![tutorial wip](Devlog_10/tutorial_wip.gif)
 
 And... That's all I've got this week.
 

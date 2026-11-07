@@ -2,7 +2,7 @@
 
 Greetings, fellow traveler. Intrigued about this project's next step ? Wondering how the player will switch between different Cities ?
 
-![cover image](Devlog17_cover.png)
+![cover image](Devlog_17/Devlog17_cover.png)
 
 Here's the answer! In this week's blog post, I introduce the project's next element - the overworld map - and briefly write about other experiments.
 

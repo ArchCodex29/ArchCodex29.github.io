@@ -2,7 +2,7 @@
 
 Greetings, fellow traveler. Thinking on how you could add fog-of-war to your own game ? Something to make the player think which way to explore first ? 
 
-![cover image](Devlog20_cover.png)
+![cover image](Devlog_20/Devlog20_cover.png)
 
 Then welcome in! In this week's blog post I write about the concept of fog-of-war and how I managed to implement something simple using mostly simple Godot elements to do it.
 
@@ -10,7 +10,7 @@ Then welcome in! In this week's blog post I write about the concept of fog-of-wa
 
 At the start of this week, my game's OverWorld map looked something like this :
 
-![no fog of war](overworld_no_fog.png)
+![no fog of war](Devlog_20/overworld_no_fog.png)
 
 A simple map, with three interactive icons to enter in the respective City Level. And yes, I changed the ground tiles and tinted the icons since last week, for readability reasons.
 
@@ -35,7 +35,7 @@ And it's the truth... usually, at least. Sometimes I take more time with the vis
 
 Speaking of visual elements, here's one! The same map, covered in fog:
 
-![only fog of war](overworld_all_fog.png)
+![only fog of war](Devlog_20/overworld_all_fog.png)
 
 I used **two** new `TileMapLayers` to complete the effect. 
 - One directly on top of the "ground" layer, mirroring the placed tiles with an added `Shader` that darkens the final result. This gave me the "shadow" portion
@@ -43,7 +43,7 @@ I used **two** new `TileMapLayers` to complete the effect.
 
 After that, I needed something to "clear" the fog around the beginning area. I *could* just remove the fog in those tiles, but that wouldn't make any sense. So I created a "MiscPoI" (point-of-interest) element that can act as a "radar" for our swarm, clearing a 1-hex radius worth of tiles. It looks more or less like this :
 
-![fog of war w/ radar](overworld_with_fog_radar.png)
+![fog of war w/ radar](Devlog_20/overworld_with_fog_radar.png)
 
 Now the player can see the first City level to start the run, and I have a reusable element in case I want to clear more fog arbitrarily.
 
@@ -51,7 +51,7 @@ Also, quick note. Turns out, doing math for measuring distances in hex maps is d
 
 Now that the player can see the first City, there was only one thing left. After conquering it, clear more of the map! Using the same exact logic as the "radar" from before, but with a 2-hex radius this time, we get see our map more clearly :
 
-![fog of war w/ conquered city](overworld_with_fog_conquer.png)
+![fog of war w/ conquered city](Devlog_20/overworld_with_fog_conquer.png)
 
 In this scenario, now would be up to the player to choose which City to conquer first. Maybe the one with the better rewards, or the one that's less defended.
 

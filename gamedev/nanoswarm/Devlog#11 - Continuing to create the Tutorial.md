@@ -2,7 +2,7 @@
 
 Greetings, fellow traveler. Here to see how my Tutorial level is going ? Perhaps looking for some tips or ideas ?
 
-![cover image](Devlog11_cover.png)
+![cover image](Devlog_11/Devlog11_cover.png)
 
 Whatever the case, welcome! In this blog post, I give a quick summary of my current standing in the Tutorial goal I set up for myself, as well as sharing some thoughts about the kinds of challenges and components I may need to create.
 
@@ -63,7 +63,7 @@ func _on_next_btn_pressed() -> void:
 
 See ? Simple. But... It allowed me to get the tutorial screen look like this sample:
 
-![Tutorial step sample](tutorial_step_wip.gif)
+![Tutorial step sample](Devlog_11/tutorial_step_wip.gif)
 
 > It doesn't look half bad! 
 

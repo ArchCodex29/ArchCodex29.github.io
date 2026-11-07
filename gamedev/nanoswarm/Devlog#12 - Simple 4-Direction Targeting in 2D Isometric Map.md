@@ -2,7 +2,7 @@
 
 Greetings, fellow traveler. Having trouble with choosing the correct point for your `NavAgents` to target ? Maybe you're just curious on how's the project going ?
 
-![cover image](Devlog12_cover.png)
+![cover image](Devlog_12/Devlog12_cover.png)
 
 If so, keep reading! In this blog post, I will focus on how I improved my unit's movement target position by choosing a "better" `Vector2D` point, as well as giving a general update on my progress in creating the Tutorial.
 
@@ -34,7 +34,7 @@ I am also starting to see the benefits of deciding to create the "Tutorial City"
 
 For me, at least, it has been. Here's an example (and also the "main topic" of this blog post). As you may remember, I have already implemented a simple version of path finding. Now, imagine how surprised I was when, during one of my first tests, I consistently saw this behavior:
 
-![Bad Targeting Example](bad_turret_target.png)
+![Bad Targeting Example](Devlog_12/bad_turret_target.png)
 
 Notice the purple path line. My units were targeting the turret and decided to just... Stop half-way there.
 
@@ -78,7 +78,7 @@ Neat! Then I'll keep going by highlighting the important steps I did.
 
 First things, first: Ensuring the Turret's `Node2D` scene has a suitable `CollisionShape2D` (I named mine "Hitbox"). Since I am creating a 2D Isometric game, I have aligned the Hitbox area to match the "ground floor" square tile that it occupies visually. I have also tweaked the properties `Rotation` and `Skew` to 30 degrees, to match the Isometric style I chose.
 
-![Turret HitBox](turret_hitbox.png)
+![Turret HitBox](Devlog_12/turret_hitbox.png)
 
 Then, on the script side of things, I included 4 basic booleans to indicate whether a given side has a walkable tile or not, and a basic method that returns up to 4 points, derived from the Hitbox's shape. Here's the snippet: 
 
@@ -123,7 +123,7 @@ And lastly, on my existing code that assigns the target position to my units, al
 
 There! Simple solution for a simple(?) problem.
 
-![Good Targeting Example](good_turret_target.png)
+![Good Targeting Example](Devlog_12/good_turret_target.png)
 
 Now my units correctly take the "long" way around, like I intended to. Further into the project, I am already planning on improving this solution by adding support to multiple points on each side. It will tie in nicely to some mechanics I have wrote down.
 

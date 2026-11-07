@@ -2,7 +2,7 @@
 
 Greetings, fellow traveler. Trying to make your scene's `Nodes` only load up when you need them ? Preferably without cutting on usability in the Godot Editor ? 
 
-![cover image](Devlog16_cover.png)
+![cover image](Devlog_16/Devlog16_cover.png)
 
 Well you're in luck! In this week's blog post, I write about Godot's `InstancePlaceholder` and how I used it to improve my existing game's components, an interesting interaction between nested `Resources` and the `Inspector` panel, as well as other general improvements that may be of interest.
 
@@ -24,7 +24,7 @@ For the Tutorial system, I created a custom resource named "TutorialData" to be 
 
 This works fine when creating and using via script only. However, when I tried to use Godot's `Inspector` panel to create and manage my tutorials, it wouldn't recognize the resource type properly, preventing me to actually create what I needed. Take a look at this image, where I included both a working example and the "limitation" I am talking about : 
 
-![regular resource vs nested resource](inner_resource_inspector_comparison.png)
+![regular resource vs nested resource](Devlog_16/inner_resource_inspector_comparison.png)
 
 One of them clearly shows the type (TutorialDataStep), while the other doesn't, defaulting to the base "Resource" class. I've tested multiple combinations, and the only difference I could pinpoint is the resource being declared in a standalone file vs. nested in an existing resource file.
 
@@ -34,7 +34,7 @@ No need for "extreme measures", I think. If you are not planning on interacting 
 
 However, during my troubleshooting, I tried to "work around" this issue by adding a custom button to the `Inspector` panel that, when pressed, instances the correct type. Totally unnecessary, but at least I learned something.
 
-![nested resource and custom button](inner_resource_inspector_issue.png)
+![nested resource and custom button](Devlog_16/inner_resource_inspector_issue.png)
 
 Nothing too complicated to implement, when you look at the final result. One new property `export` property which happens to be a button referencing a custom method of ours. May be a useful trick for the future, but I went ahead and moved the "Step" nested `Resource` to it's own file. Less of a hassle.
 
@@ -50,7 +50,7 @@ In other areas, this concept is usually called "Lazy Loading". There are *tons* 
 
 This can be applied in thousands of ways! Like I wrote before, I started by improving my StateMachine implementation to take this in consideration and it turned out to be a *very* small change. Here's the main method : 
 
-![instance placeholder sample 1](statemachine_instanceplaceholder_support.png)
+![instance placeholder sample 1](Devlog_16/statemachine_instanceplaceholder_support.png)
 
 When retrieving a child node (to then transition to), all I have to do is check if it's already a state (the usual) or the newly introduced `InstancePlaceholder`. if it is, then... instance it. It's that easy. 
 
@@ -62,7 +62,7 @@ One of the elements I currently have is the "toolbox" - an area on the bottom of
 
 By adding one instance of the "card" component to the `Scene` tree and marking is as a placeholder, I immediately gained the preview I wanted. All it needed was a quick script adjustment. Here's a quick comparison :
 
-![instance placeholder sample 2](cards_instanceplaceholder_sample.png)
+![instance placeholder sample 2](Devlog_16/cards_instanceplaceholder_sample.png)
 
 As you can see, it didn't change that much, but the benefits are worth it!
 

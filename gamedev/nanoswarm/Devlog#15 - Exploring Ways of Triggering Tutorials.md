@@ -2,7 +2,7 @@
 
 Greetings, fellow traveler. Curious for different ways of evaluating when to show a tutorial to player ? Or looking for new tricks in Godot ?
 
-![cover image](Devlog15_cover.png)
+![cover image](Devlog_15/Devlog15_cover.png)
 
 Then welcome! In this blog post I write about the experiments I did while creating a system that decides when to present a tutorial to a player as well as talking about an idea about this blog posts I want to try out.
 

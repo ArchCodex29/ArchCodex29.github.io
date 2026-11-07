@@ -2,7 +2,7 @@
 
 Greetings, fellow traveler. Have you managed to design a level layout with roads and other elements ? Wouldn't it be nice if those tiles were more than just "visuals" and actually walkable ? 
 
-![cover image](Devlog9_cover.png)
+![cover image](Devlog_9/Devlog9_cover.png)
 
 If that's the case, then I might be able to help! In this week's blog post, I write about further improving my City Map by adding actual "navigation" capabilities by leveraging Godot's `NavigationRegion2D` and other related Nodes.
 
@@ -14,11 +14,11 @@ Well yes, but actually no.
 
 To make something "move" we have to change it's position, that part is correct. But it is far from the "only" thing. Here's a quick demonstration. If I only worry about an element's position, I would end with something like this:
 
-![Bad Navigation Example](unit_nav_bad.gif)
+![Bad Navigation Example](Devlog_9/unit_nav_bad.gif)
 
 As you just saw, the little square moved in a straight line to it's goal. Not that impressive. However, with proper navigation support, it can look like this instead:
 
-![Good Navigation Example](unit_nav_good.gif)
+![Good Navigation Example](Devlog_9/unit_nav_good.gif)
 
 > Ooh, I see! The unit is following the road path, like in a tower defense!
 
@@ -111,7 +111,7 @@ And that's pretty much it. To make it easier for us to see what's happening, we 
 
 If all goes well, you should end up with something like this:
 
-![NavigationLayer Sample](navlayer_sample.gif)
+![NavigationLayer Sample](Devlog_9/navlayer_sample.gif)
 
 Our little square can very easily follow the road path that we layed out with our existing `TileSet`. I also changed the `NavigationAgent2D` > `Path Postprocessing` to "Edgecentered" so it would move in the middle of the road. Neat, right ? 
 
@@ -160,7 +160,7 @@ So, as long as we have multiple `TileMapLayers` with the different types of tile
 
 By setting up the two `NavigationRegion2Ds` as I described (changing the mode and group name in each), we can then press the "Bake NavigationPolygon" button on each and see the end result. It should look something like this:
 
-![NavMesh visuals](city_gen_with_navmesh.png)
+![NavMesh visuals](Devlog_9/city_gen_with_navmesh.png)
 
 > Mine is similar, but I don't have the purple lines
 
@@ -174,11 +174,11 @@ Great! Now, one last detail. Remember the "road vs. ground" preference thing I m
 
 And that's all the setup with need! Now, whenever we want to "bake" our custom regions in our code, all we have to do is invoke the `bake_navigation_polygon()` in each and we are set! Here's a few examples of it working:
 
-![NavigationRegion Sample](navregion_sample.gif)
+![NavigationRegion Sample](Devlog_9/navregion_sample.gif)
 
 *(In this next one, I "broke" the road to make the units use the regular ground tiles)*
 
-![NavigationRegion Sample 2](navregion_sample_2.gif)
+![NavigationRegion Sample 2](Devlog_9/navregion_sample_2.gif)
 
 ## Closing Notes
 

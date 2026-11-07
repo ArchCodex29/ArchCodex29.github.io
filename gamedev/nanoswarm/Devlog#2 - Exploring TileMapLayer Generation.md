@@ -2,7 +2,7 @@
 
 Greetings, fellow traveler. Curious what you can achieve with TileMapLayer in Godot ? 
 
-![cover image](Devlog2_cover.png)
+![cover image](Devlog_2/Devlog2_cover.png)
 
 Then stay and read a bit! This week I decided to follow up on last week's work with 2D isometric assets and see what kind of options Godot offers up.
 
@@ -31,17 +31,17 @@ Well ... We can also take advantage of the "common" examples, such as the "groun
 
 I started by creating a **Terrain Set** (a group of terrains) and a "road" **Terrain**, like this :
 
-![Terrain Set Example](tilemaplayer_terrainset.png)
+![Terrain Set Example](Devlog_2/tilemaplayer_terrainset.png)
 
 Then, on the TileSet panel, I went to the `Paint` section, selected the Terrains property (picking the one I just created) and started clicking on the tiles that I wanted to mark as "road", coloring the sides and cornes that made sense based on each tile, like so :
 
-![Tile Set Terrain Paint Example](tilemaplayer_terrain_paint.png)
+![Tile Set Terrain Paint Example](Devlog_2/tilemaplayer_terrain_paint.png)
 
 How to know which side to color in ? Super simple : Just need to "paint" the sides or cornes that we want connected with other tiles of the same kind. So, in this example, I just had to color in the actual road bits!
 
 And how does it look, in practice ? Something along the lines of this :
 
-![Tile Set Terrain Demonstration](tilemaplayer_terrain_demo.gif)
+![Tile Set Terrain Demonstration](Devlog_2/tilemaplayer_terrain_demo.gif)
 
 > Oh, oh! That looked great! Think of the possibilities 
 
