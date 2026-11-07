@@ -1,3 +1,0 @@
-extends Node
-
-# stuff here
