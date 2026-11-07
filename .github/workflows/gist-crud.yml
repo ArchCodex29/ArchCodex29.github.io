@@ -71,7 +71,7 @@ jobs:
           import sys
           from pathlib import Path
 
-          from automation.github.gist_client import (
+          from gist_client import (
               GitHubGistClient,
               GitHubGistError
           )
