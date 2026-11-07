@@ -2,7 +2,7 @@
 
 Greetings, fellow traveler. Looking for ideas on how to present a level's info in your game ? Perhaps a preview screen before the player enters ?
 
-![cover image](Devlog21_cover.png)
+![cover image](Devlog_21/Devlog21_cover.png)
 
 Look no further! In this week's blog post I will be presenting two new improvements to my game's OverWorld map : A new card-like UI element with a City Level preview info paired with zoom in-and-out effects *without* affecting HUD elements.
 
@@ -22,7 +22,7 @@ If you've been following along with my updates, this pattern should be familiar 
 
 As per usual, I've gone with a simple structure (Mainly because I'm not good with UI). It looks something like this :
 
-![Level Info Card in Editor](level_card_editor.png)
+![Level Info Card in Editor](Devlog_21/level_card_editor.png)
 
 For the icons, I have once again recurred to some of [Kenney's Icons](https://kenney.nl/assets/board-game-icons). Not a perfect fit for what I had in my mind, but the icons are pretty regardless. 
 
