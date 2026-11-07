@@ -10,6 +10,52 @@
 			"path": "projects"
 		}
 	],
+	"tasks": {
+		"version": "2.0.0",
+		"tasks": [
+			{
+				"label": "NanoSwarm: Add Devlog",
+				"type": "shell",
+				"command": "bash",
+				"args": [
+					"../.github/scripts/create_devlog.sh",
+					"${input:devlogNumber}",
+					"${input:devlogTitle}"
+				],
+				"options": {
+					"cwd": "${workspaceFolder:gamedev}",
+					"shell": {
+						"executable": "wsl",
+						"args": [
+							"-d",
+							"ArchDaemon"
+						]
+					}
+				},
+				"group": "none",
+				"presentation": {
+					"reveal": "silent",
+					"panel": "shared",
+					"clear": false
+				},
+				"problemMatcher": []
+			}
+		],
+		"inputs": [
+			{
+				"id": "devlogNumber",
+				"type": "promptString",
+				"description": "Devlog number",
+				"default": "22"
+			},
+			{
+				"id": "devlogTitle",
+				"type": "promptString",
+				"description": "Devlog title",
+				"default": "New Devlog"
+			}
+		]
+	},
 	"settings": {
 		"workbench.colorTheme": "Catppuccin Macchiato",
 		"cSpell.useLocallyInstalledCSpellDictionaries": false
