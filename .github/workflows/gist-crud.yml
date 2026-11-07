@@ -45,6 +45,7 @@ jobs:
       contents: read
 
     env:
+      PYTHONPATH: ${{ github.workspace }}/.github/scripts
       GIST_TOKEN: ${{ secrets.GIST_TOKEN }}
       OPERATION: ${{ inputs.operation }}
       GIST_ID: ${{ inputs.gist_id }}
