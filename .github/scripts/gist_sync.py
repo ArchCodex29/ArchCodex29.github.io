@@ -3,8 +3,10 @@
 
 import argparse
 import re
+import subprocess
 import sys
 from pathlib import Path
+from pathlib import PurePosixPath
 
 import yaml
 
@@ -14,6 +16,13 @@ from gist_client import GitHubGistClient, GitHubGistError
 REPO_ROOT = Path(__file__).resolve().parents[2]
 GIST_ID_RE = re.compile(r"^[0-9a-f]{32}$")
 DEVLOG_DIR_RE = re.compile(r"^Devlog_(\d+)$")
+COMMIT_RE = re.compile(r"^(?:[0-9a-f]{40}|[0-9a-f]{64})$")
+CHANGED_CODE_RE = re.compile(
+    r"^gamedev/nanoswarm/Devlog_(\d+)/[^/]+\.gd$"
+)
+CHANGED_MARKDOWN_RE = re.compile(
+    r"^gamedev/nanoswarm/Devlog#(\d+) - .+\.md$"
+)
 
 
 class GistSyncError(Exception):
@@ -178,9 +187,11 @@ def sync_devlog(
     return "updated"
 
 
-def sync_all(root: Path = REPO_ROOT, client: GitHubGistClient | None = None) -> dict[str, int]:
-    """Synchronize all discovered NanoSwarm dev-log Gists."""
-    devlogs = discover_devlog_dirs(root)
+def sync_devlogs(
+    devlogs: list[tuple[int, Path]],
+    root: Path,
+    client: GitHubGistClient | None = None,
+) -> dict[str, int]:
     if not any(read_local_files(path) for _, path in devlogs):
         print("No NanoSwarm dev-log .gd files found.")
         return {"created": 0, "updated": 0, "unchanged": 0, "skipped": len(devlogs)}
@@ -195,8 +206,86 @@ def sync_all(root: Path = REPO_ROOT, client: GitHubGistClient | None = None) -> 
     return summary
 
 
+def sync_all(root: Path = REPO_ROOT, client: GitHubGistClient | None = None) -> dict[str, int]:
+    """Synchronize all discovered NanoSwarm dev-log Gists."""
+    return sync_devlogs(discover_devlog_dirs(root), root, client)
+
+
+def get_changed_paths(root: Path, base: str | None, head: str | None) -> list[str]:
+    """List paths changed across the complete push range."""
+    if (
+        not base
+        or not head
+        or not COMMIT_RE.fullmatch(base)
+        or not COMMIT_RE.fullmatch(head)
+        or set(base) == {"0"}
+    ):
+        raise GistSyncError("Push commit range is missing or unavailable.")
+
+    result = subprocess.run(
+        [
+            "git", "diff", "--no-renames", "--name-only", "-z",
+            base, head, "--", "gamedev/nanoswarm",
+        ],
+        cwd=root,
+        check=True,
+        capture_output=True,
+    )
+    return [
+        path for path in result.stdout.decode("utf-8", errors="surrogateescape").split("\0")
+        if path
+    ]
+
+
+def affected_devlog_numbers(changed_paths: list[str], root: Path) -> list[int]:
+    """Select dev logs affected by code changes or existing Markdown edits."""
+    affected = set()
+    for changed_path in changed_paths:
+        normalized_path = PurePosixPath(changed_path).as_posix()
+        code_match = CHANGED_CODE_RE.fullmatch(normalized_path)
+        if code_match:
+            affected.add(int(code_match.group(1)))
+            continue
+
+        markdown_match = CHANGED_MARKDOWN_RE.fullmatch(normalized_path)
+        if markdown_match and (root / Path(*PurePosixPath(normalized_path).parts)).is_file():
+            affected.add(int(markdown_match.group(1)))
+    return sorted(affected)
+
+
+def sync_update(
+    root: Path,
+    base: str | None,
+    head: str | None,
+    client: GitHubGistClient | None = None,
+) -> dict[str, int]:
+    """Synchronize affected dev logs, falling back to full sync if needed."""
+    try:
+        changed_paths = get_changed_paths(root, base, head)
+    except (GistSyncError, OSError, subprocess.CalledProcessError) as error:
+        print(f"⚠  Could not determine push changes ({error}); falling back to full sync.")
+        return sync_all(root, client)
+
+    numbers = affected_devlog_numbers(changed_paths, root)
+    if not numbers:
+        print("No dev-log code or Markdown changes found in the push range.")
+        return {"created": 0, "updated": 0, "unchanged": 0, "skipped": 0}
+
+    asset_root = root / "gamedev" / "nanoswarm"
+    devlogs = [(number, asset_root / f"Devlog_{number}") for number in numbers]
+    return sync_devlogs(devlogs, root, client)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--mode",
+        choices=("full", "update"),
+        default="full",
+        help="Full reconciliation or only dev logs changed in a Git range.",
+    )
+    parser.add_argument("--base", help="Previous commit SHA for update mode.")
+    parser.add_argument("--head", help="Current commit SHA for update mode.")
     parser.add_argument(
         "--root",
         type=Path,
@@ -206,7 +295,11 @@ def main() -> int:
     args = parser.parse_args()
 
     try:
-        summary = sync_all(args.root.resolve())
+        root = args.root.resolve()
+        if args.mode == "update":
+            summary = sync_update(root, args.base, args.head)
+        else:
+            summary = sync_all(root)
     except (GistSyncError, GitHubGistError, ValueError) as error:
         print(f"Gist sync failed: {error}", file=sys.stderr)
         return 1

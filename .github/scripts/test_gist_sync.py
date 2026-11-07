@@ -1,7 +1,7 @@
 import tempfile
 import unittest
 from pathlib import Path
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 import gist_sync
 from gist_client import GitHubGistClient
@@ -182,6 +182,92 @@ class GistSyncTests(unittest.TestCase):
             f"/{GIST_ID}",
             {"files": {}, "description": "Updated title"},
         )
+
+    def test_changed_paths_uses_full_range_and_disables_rename_detection(self):
+        result = Mock(stdout=b"gamedev/nanoswarm/Devlog_10/movement.gd\0")
+        with patch("gist_sync.subprocess.run", return_value=result) as run:
+            paths = gist_sync.get_changed_paths(self.root, "a" * 40, "b" * 40)
+
+        self.assertEqual(paths, ["gamedev/nanoswarm/Devlog_10/movement.gd"])
+        self.assertEqual(run.call_args.args[0][1:5], [
+            "diff", "--no-renames", "--name-only", "-z",
+        ])
+        self.assertEqual(run.call_args.args[0][5:7], ["a" * 40, "b" * 40])
+
+    def test_changed_path_selection_includes_top_level_code_and_existing_markdown(self):
+        nested_dir = self.devlog_dir / "nested"
+        nested_dir.mkdir()
+        (nested_dir / "nested.gd").write_text("ignored", encoding="utf-8")
+        changed_paths = [
+            "gamedev/nanoswarm/Devlog_10/movement.gd",
+            "gamedev/nanoswarm/Devlog_10/nested/nested.gd",
+            "gamedev/nanoswarm/Devlog#10 - Beginning to create the Tutorial.md",
+            "gamedev/nanoswarm/Devlog#11 - Deleted post.md",
+            "gamedev/nanoswarm/Devlog_10/gist.yml",
+            "gamedev/nanoswarm/Devlog#10 - unrelated.txt",
+        ]
+
+        affected = gist_sync.affected_devlog_numbers(changed_paths, self.root)
+
+        self.assertEqual(affected, [10])
+
+    def test_markdown_only_change_selects_its_devlog(self):
+        affected = gist_sync.affected_devlog_numbers(
+            ["gamedev/nanoswarm/Devlog#10 - Beginning to create the Tutorial.md"],
+            self.root,
+        )
+
+        self.assertEqual(affected, [10])
+
+    def test_update_sync_only_processes_affected_devlog(self):
+        self.add_code()
+        other_dir = self.asset_root / "Devlog_2"
+        other_dir.mkdir()
+        (other_dir / "other.gd").write_text("other", encoding="utf-8")
+        (self.asset_root / "Devlog#2 - Other post.md").write_text(
+            "# Other", encoding="utf-8"
+        )
+        self.client.create_gist.return_value = {
+            "id": GIST_ID,
+            "html_url": f"https://gist.github.com/{GIST_ID}",
+        }
+
+        with patch.object(
+            gist_sync,
+            "get_changed_paths",
+            return_value=["gamedev/nanoswarm/Devlog_10/movement.gd"],
+        ):
+            result = gist_sync.sync_update(self.root, "a" * 40, "b" * 40, self.client)
+
+        self.assertEqual(result["created"], 1)
+        self.client.create_gist.assert_called_once_with(
+            "Devlog#10 - Beginning to create the Tutorial",
+            {"movement.gd": "extends Node\n"},
+            public=False,
+        )
+
+    def test_update_sync_falls_back_to_full_when_range_is_unavailable(self):
+        expected = {"created": 0, "updated": 1, "unchanged": 0, "skipped": 0}
+        with patch.object(
+            gist_sync,
+            "get_changed_paths",
+            side_effect=gist_sync.GistSyncError("missing range"),
+        ), patch.object(gist_sync, "sync_all", return_value=expected) as sync_all:
+            result = gist_sync.sync_update(self.root, None, "b" * 40, self.client)
+
+        self.assertEqual(result, expected)
+        sync_all.assert_called_once_with(self.root, self.client)
+
+    def test_update_sync_skips_unrelated_changes_without_constructing_client(self):
+        with patch.object(
+            gist_sync,
+            "get_changed_paths",
+            return_value=["gamedev/nanoswarm/Devlog_99/gist.yml"],
+        ), patch.object(gist_sync, "GitHubGistClient") as client_class:
+            result = gist_sync.sync_update(self.root, "a" * 40, "b" * 40)
+
+        self.assertEqual(result, {"created": 0, "updated": 0, "unchanged": 0, "skipped": 0})
+        client_class.assert_not_called()
 
 
 if __name__ == "__main__":

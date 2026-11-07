@@ -2,6 +2,7 @@ name: Sync content, Build and Deploy
 on:
   push:
     branches:
+      - gist-integration
       - main
   workflow_dispatch:
 
@@ -52,8 +53,16 @@ jobs:
           GIST_TOKEN: ${{ secrets.GIST_TOKEN }}
         run: python .github/scripts/gist_sync.py
 
-      - name: Commit Gist metadata (manual dispatch)
-        if: github.event_name == 'workflow_dispatch'
+      - name: Incremental Gist sync (push)
+        if: github.event_name == 'push'
+        env:
+          GIST_TOKEN: ${{ secrets.GIST_TOKEN }}
+        run: >-
+          python .github/scripts/gist_sync.py --mode update
+          --base "${{ github.event.before }}"
+          --head "${{ github.sha }}"
+
+      - name: Commit Gist metadata
         run: |
           if compgen -G 'gamedev/nanoswarm/Devlog_*/gist.yml' > /dev/null; then
             git add -A -- gamedev/nanoswarm/Devlog_*/gist.yml

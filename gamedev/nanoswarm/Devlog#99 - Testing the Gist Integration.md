@@ -10,6 +10,6 @@ me referencing a file
 
 more stuff
 
-me referencing the other file
+me referencing the new file
 
-[said other file 2](Devlog_99/my_other_test_file.gd)
+[said other file](Devlog_99/my_new_file.gd)
