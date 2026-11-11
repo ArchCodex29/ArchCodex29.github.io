@@ -44,11 +44,21 @@ Luckily, I found a solution that worked right out of the box. By moving all my H
 
 As for the zoom in-and-out effect, I will let you try to think on your own solution for it.
 
-[Sample Zoom in](Devlog_21/zoom_in.gd)
-
 > Really ? Not even a clue ?
 
-I can do that! You will want to keep track of two types of positions - one for when you want to zoom *in* and one for when you want to zoom *out* - as well as the actual zoom values (1x, 2x, etc). Bonus points if you use Godot's `Tween` to smooth out the actual movement. If you end up needing a working example, just ask! 
+I can do that! You will want to keep track of two types of positions - one for when you want to zoom *in* and one for when you want to zoom *out* - as well as the actual zoom values (1x, 2x, etc). Bonus points if you use Godot's [`Tween`](https://docs.godotengine.org/en/stable/classes/class_tween.html) to smooth out the actual movement. If you end up needing a working example, just ask! 
+
+***Update:** Due to popular demand, I have revisited this blog post to include the samples for zoom in and out functions. So, keep reading!*
+
+Here's the up-to-date version I am currently using on my game!
+
+In this snippet, I have the "zoom in" portion, with a new improvement : option to "slide" between two Cities while already zoomed in! Notice how I use the `Tween` to both smooth the `zoom` and `position` value transitions as well as syncing when the Level info card shows up.
+
+[Sample Zoom in](Devlog_21/zoom_in.gd)
+
+And in this snippet, I have the "zoom out" portion. It uses most of the components as the first snippet, so it should be fairly straight forward. For the "return position" when we are zooming out, I chose to calculate the "center" of the map beforehand, but it could be anything else! Like storing the `Camera2D` original position before zooming in, then using it here! Try out changing some settings to see what fits *your* game.
+
+[Sample Zoom Out](Devlog_21/zoom_out.gd)
 
 After I integrated everything together, this is the final result :
 
