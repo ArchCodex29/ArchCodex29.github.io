@@ -44,6 +44,8 @@ Luckily, I found a solution that worked right out of the box. By moving all my H
 
 As for the zoom in-and-out effect, I will let you try to think on your own solution for it.
 
+[Sample Zoom in](Devlog_21/zoom_in.gd)
+
 > Really ? Not even a clue ?
 
 I can do that! You will want to keep track of two types of positions - one for when you want to zoom *in* and one for when you want to zoom *out* - as well as the actual zoom values (1x, 2x, etc). Bonus points if you use Godot's `Tween` to smooth out the actual movement. If you end up needing a working example, just ask! 
