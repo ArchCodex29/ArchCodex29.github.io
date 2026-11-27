@@ -2,7 +2,7 @@
 
 Greetings, fellow traveler. Care to join me for a brief moment to think about a unit group total capacity, and how to recover in between levels ?
 
-![cover image](Devlog_23\Devlog23_cover.png)
+![cover image](Devlog_23/Devlog23_cover.png)
 
 Glad you could make it! In this week's short blog post, I will quickly mention the changes to the swarm's size implementation as well as talk about an idea for the first OverWorld action : Regen!
 
