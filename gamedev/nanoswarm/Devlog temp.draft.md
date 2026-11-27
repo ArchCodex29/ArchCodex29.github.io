@@ -1,7 +1,6 @@
-saving a local todo file ( have to update the board soon )
-first version of a rewards screen. still w/ temp stuff
-trying out implementing the reward screen inside combat results
-removing dedicated reward card in favor of embedded in combat results
-skill reward picked show/hide cards
-promoted scrap resource to own file; new scrap hud
-todo file updated
+new point added - save swarm state between cities
+quick separation between swarm capacity and current size; keep state between cities; old swarm-related code commented or briefly refactored
+todo file update
+todo file update
+simple / rudimentary impl of "swarm size : t. conquered cities" (using a reward type)
+todo file update
